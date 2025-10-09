@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Wallpaper Changer
-Exec="/etc/openflexos/usr/local/bin/OpenFlexOS_WallpaperChanger.sh"
-Comment=Change wallpapers
-Categories=System;Utility;
-Terminal=false
