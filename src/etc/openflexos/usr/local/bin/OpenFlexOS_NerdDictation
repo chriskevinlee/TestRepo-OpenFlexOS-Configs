@@ -1,0 +1,2 @@
+#!/bin/bash
+exec /opt/nerd-dictation/vosk-venv/bin/python /opt/nerd-dictation/nerd-dictation "$@"

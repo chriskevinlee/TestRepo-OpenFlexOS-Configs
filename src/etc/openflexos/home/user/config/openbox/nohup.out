@@ -1,0 +1,44 @@
+tint2: Using glib slice allocator (default). Run tint2 with environment variable G_SLICE=always-malloc in case of strange behavior or crashes
+tint2: xRandr: Found crtc's: 4
+[1;34mtint2: xRandr: Linking output HDMI-1 with crtc 0, resolution 1920x1080, DPI 102[0m
+tint2: xRandr: crtc 1 seems disabled
+tint2: xRandr: crtc 2 seems disabled
+tint2: xRandr: crtc 3 seems disabled
+tint2: No XSETTINGS manager, tint2 uses config option 'launcher_icon_theme'.
+tint2: Loading config file: /home/chris/.config/openbox/tint2/tint2rc
+tint2: real transparency off.... depth: 24
+tint2: panel items: ELTSCEEEEE
+tint2: Systray composited rendering off
+tint2: systray_asb forced to 100 0 0
+tint2: nb monitors 1, nb monitors used 1, nb desktops 4
+[1;34mtint2: panel 1 uses scale 1 [0m
+Creating executor 'echo ""' with monitor -1 for panel on monitor 0
+Creating executor 'bash -c /home/$USER/.config/openbox/scripts/OpenFlexOS_Brightness.sh' with monitor -1 for panel on monitor 0
+Creating executor 'bash -c /home/$USER/.config/openbox/scripts/OpenFlexOS_Volume.sh' with monitor -1 for panel on monitor 0
+Creating executor 'bash -c /home/$USER/.config/openbox/scripts/OpenFlexOS_Battery.sh' with monitor -1 for panel on monitor 0
+Creating executor 'bash -c /home/$USER/.config/openbox/scripts/OpenFlexOS_Network.sh' with monitor -1 for panel on monitor 0
+Creating executor 'echo "⏻"' with monitor -1 for panel on monitor 0
+tint2: Could not open file /home/chris/.local/share/applications/firefox.desktop
+tint2: Could not open file /usr/local/share/applications/firefox.desktop
+[1;32mtint2: Loading icon theme cache...[0m
+tint2: Could not open file /home/chris/.local/share/applications/Alacritty.desktop
+tint2: Could not open file /usr/local/share/applications/Alacritty.desktop
+tint2: Could not open file /home/chris/.local/share/applications/caja.desktop
+tint2: Could not open file /usr/local/share/applications/caja.desktop
+tint2: Could not open file /home/chris/.local/share/applications
+tint2: Could not open file /opt/share/applications
+tint2: Could not open file /home/chris/.local/share/applications
+tint2: Could not open file /opt/share/applications
+tint2: Could not open file /home/chris/.local/share/applications
+tint2: Could not open file /opt/share/applications
+tint2: Could not open file /home/chris/.local/share/applications
+tint2: Could not open file /opt/share/applications
+tint2: Kernel uevent interface initialized...
+[1;31mtint2: Could not find icon '(null)', using default.[0m
+[1;31mtint2: Could not find icon '(null)', using default.[0m
+[1;31mtint2: Could not find icon '(null)', using default.[0m
+[1;31mtint2: Could not find icon '(null)', using default.[0m
+tint2: systray window 23068688
+[1;32mtint2: systray started[0m
+[1;32madd_icon: 29360163 (), pid 4465, visual 0x5588f9ac3250, colormap 29360133, depth 24, width 22, height 22[0m
+[1;33mtint2: remove_icon: 29360163 ()[0m
