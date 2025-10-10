@@ -1,6 +1,0 @@
-# Add websites here in the format:
-# Website Name | https://example.com
-Github:OpenFlexOS Install | https://github.com/chriskevinlee/OpenFlexOS-Arch
-Github:OpenFlexOS Docs | https://github.com/chriskevinlee/OpenFlexOS-Arch/wiki
-Github:OpenFlexOS Configs | https://github.com/chriskevinlee/OpenFlexOS-Configs
-Arch Linux | https://archlinux.org/

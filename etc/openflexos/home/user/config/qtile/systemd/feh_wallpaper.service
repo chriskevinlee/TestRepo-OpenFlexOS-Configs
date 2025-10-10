@@ -1,9 +1,0 @@
-[Unit]
-Description=Feh Wallpaper Script
-
-[Service]
-Type=simple
-ExecStart=/home/chris/.config/scripts/feh_wallpaper.sh
-
-[Install]
-WantedBy=multi-user.target
