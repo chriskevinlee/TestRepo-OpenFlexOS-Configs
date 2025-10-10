@@ -1,0 +1,5 @@
+gtk-theme-name="Default"
+gtk-icon-theme-name="Papirus"
+gtk-font-name="Sans 10"
+gtk-cursor-theme-name="Adwaita"
+gtk-color-scheme = "bg_color:#002b36\nfg_color:#dc322f\nbase_color:#002b36\ntext_color:#dc322f\nselected_bg_color:#859900\nselected_fg_color:#dc322f"
