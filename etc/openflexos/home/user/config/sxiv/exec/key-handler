@@ -1,0 +1,9 @@
+#!/bin/sh
+while read file
+do
+    case "$1" in
+    "C-w")
+        feh --bg-scale "$file" && dunstify -u normal "Wallpaper Appiled" && echo $file > /home/$USER/.config/$DESKTOP_SESSION/.selected_wallpaper
+        ;;
+    esac
+done

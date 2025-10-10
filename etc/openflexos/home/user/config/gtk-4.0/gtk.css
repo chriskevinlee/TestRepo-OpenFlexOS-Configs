@@ -1,0 +1,15 @@
+* {
+  background-color: #002b36;
+  color: #dc322f;
+  border-color: #268bd2;
+}
+
+*:hover,
+*:selected,
+*:active,
+list row:selected,
+menuitem:hover,
+menuitem:selected {
+  background-color: #859900;
+  color: #dc322f;
+}
