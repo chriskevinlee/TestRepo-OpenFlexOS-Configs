@@ -7,7 +7,7 @@
 # ================================================================
 
 # ---------------- Directories ----------------
-SYSTEM_WALLPAPERS="/etc/openflexos/home/users/config/wallpapers"
+SYSTEM_WALLPAPERS="/etc/openflexos/home/user/config/wallpapers"
 USER_WALLPAPERS="$HOME/.config/wallpapers"
 
 # Users can disable system wallpapers by creating ~/.config/wallpapers.nosystem
