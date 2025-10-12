@@ -5,7 +5,7 @@
 
 # Maintainer: Your Name <youremail@domain.com>
 pkgname=openflexos-configs
-pkgver=1.0.4
+pkgver=1.0.5
 pkgrel=1
 pkgdesc="Default configuration files for OpenFlexOS (test version)"
 arch=(any)
