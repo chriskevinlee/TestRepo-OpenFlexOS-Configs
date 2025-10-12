@@ -32,7 +32,7 @@ power() {
     # Launcher setup (Rofi or Dmenu)
     # ------------------------------
     if [[ "$1" == "rofi" ]]; then
-        launcher="rofi -config /home/$USER/.config/$WM/rofi/config.rasi -dmenu"
+        launcher="rofi -i -config /home/$USER/.config/$WM/rofi/config.rasi -dmenu"
     elif [[ "$1" == "dmenu" ]]; then
         launcher="dmenu -l 10 -y 20 -x 20 -z 1880 -i"
     else
