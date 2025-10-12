@@ -72,6 +72,8 @@ fi
 flameshot &
 tint2 -c /home/$USER/.config/openbox/tint2/tint2rc &
 xscreensaver -no-splash &
+
+# This is to start picom
 picom &
 
 # Start Scripts at Login
