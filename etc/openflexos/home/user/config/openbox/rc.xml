@@ -337,6 +337,23 @@
 </keybind>
 
 <!-- KeyChords KeyChains -->
+<keybind key="A-m">
+  <keybind key="d">
+    <action name="Execute">
+        <command>/etc/openflexos/usr/local/bin/OpenFlexOS_WebBookmarker.sh -d</command>
+    </action>
+  </keybind>
+
+  <keybind key="r">
+    <action name="Execute">
+      <command>/etc/openflexos/usr/local/bin/OpenFlexOS_WebBookmarker.sh -r</command>
+    </action>
+  </keybind>
+</keybind>
+
+
+
+
 <keybind key="A-w">
   <keybind key="s">
     <action name="Execute">
@@ -349,7 +366,6 @@
       <command>/etc/openflexos/usr/local/bin/OpenFlexOS_WallpaperChanger.sh -r</command>
     </action>
   </keybind>
-
 
   <keybind key="b">
     <action name="Execute">
