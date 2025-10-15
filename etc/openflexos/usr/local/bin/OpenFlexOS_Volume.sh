@@ -7,6 +7,22 @@
 # Usage: ./OpenFlexOS_Volume.sh -u|-d|-m|-h
 # ================================================================
 
+package_list=(
+    pipewire-pulse
+    dunst
+)
+
+for pkg in "${package_list[@]}"; do
+    if ! pacman -Q "$pkg" >/dev/null 2>&1; then
+        echo "$pkg is NOT installed, installing..."
+        dunstify -u normal "$pkg is NOT installed, installing..."
+        zenity --info --text="$pkg is NOT installed, installing..."
+
+        # Open a new Alacritty window to run the installation
+        alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
+    fi
+done
+
 volume_icon="󰕾"
 volume_increase="+10%"
 volume_decrease="-10%"

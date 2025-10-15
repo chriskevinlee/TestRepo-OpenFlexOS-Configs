@@ -50,10 +50,39 @@ fi
 while getopts "drh" main 2>/dev/null; do
     case "${main}" in
         d)
+            package_list=(
+                openflexos-dmenu
+            )
+
+            for pkg in "${package_list[@]}"; do
+                if ! pacman -Q "$pkg" >/dev/null 2>&1; then
+                    echo "$pkg is NOT installed, installing..."
+                    dunstify -u normal "$pkg is NOT installed, installing..."
+                    zenity --info --text="$pkg is NOT installed, installing..."
+
+                    # Open a new Alacritty window to run the installation
+                    alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
+                fi
+            done
+
             launcher="dmenu -l 10 -i"
             web_menu
             ;;
         r)
+            package_list=(
+                rofi
+            )
+
+            for pkg in "${package_list[@]}"; do
+                if ! pacman -Q "$pkg" >/dev/null 2>&1; then
+                    echo "$pkg is NOT installed, installing..."
+                    dunstify -u normal "$pkg is NOT installed, installing..."
+                    zenity --info --text="$pkg is NOT installed, installing..."
+
+                    # Open a new Alacritty window to run the installation
+                    alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
+                fi
+            done
             # 👇 use WM-aware rofi config
             launcher="rofi -config /home/$USER/.config/${WM:-openbox}/rofi/config.rasi -dmenu -i -p 'Bookmarks'"
             web_menu

@@ -3,7 +3,7 @@
 # ================================================================
 # Description: Combined Wifi Menu using Rofi or Dmenu and status display
 # Author: Chris Lee, ChatGPT
-# Dependencies: rofi, dmenu, nmcli, dunstify, NerdFontsSymbolsOnly
+# Dependencies: rofi, dmenu, networkmanager, dunstify, NerdFontsSymbolsOnly
 # ================================================================
 
 wifi_icon=""
@@ -130,9 +130,43 @@ fi
 while getopts "rdh" main 2>/dev/null; do
     case "$main" in
         r)
+            package_list=(
+                rofi
+                networkmanager
+                dunst
+                NerdFontsSymbolsOnly
+            )
+
+            for pkg in "${package_list[@]}"; do
+                if ! pacman -Q "$pkg" >/dev/null 2>&1; then
+                    echo "$pkg is NOT installed, installing..."
+                    dunstify -u normal "$pkg is NOT installed, installing..."
+                    zenity --info --text="$pkg is NOT installed, installing..."
+
+                    # Open a new Alacritty window to run the installation
+                    alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
+                fi
+            done
             wifi_network rofi_cmd
             ;;
         d)
+            package_list=(
+                openflexos-dmenu
+                networkmanager
+                dunst
+                NerdFontsSymbolsOnly
+            )
+
+            for pkg in "${package_list[@]}"; do
+                if ! pacman -Q "$pkg" >/dev/null 2>&1; then
+                    echo "$pkg is NOT installed, installing..."
+                    dunstify -u normal "$pkg is NOT installed, installing..."
+                    zenity --info --text="$pkg is NOT installed, installing..."
+
+                    # Open a new Alacritty window to run the installation
+                    alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
+                fi
+            done
             dmenu_launcher="dmenu -l 10 -y 20 -x 20 -z 1880 -i -p"
             wifi_network "$dmenu_launcher"
             ;;
