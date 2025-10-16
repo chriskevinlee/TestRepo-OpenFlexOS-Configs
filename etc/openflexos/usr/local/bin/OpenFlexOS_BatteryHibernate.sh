@@ -4,7 +4,7 @@
 # Description: This script monitors the battery and notifies the user when it's low.
 # It also warns audibly and hibernates the system when the battery is critically low.
 # Author: Chris Lee, ChatGPT
-# Dependencies: mpv, dunstify, inotify-tools
+# Dependencies: mpv, dunstify
 # Notes: Sounds from https://pixabay.com
 # - https://pixabay.com/sound-effects/machine-error-by-prettysleepy-art-12669/
 # - https://pixabay.com/sound-effects/error-83494/
@@ -13,7 +13,6 @@
 package_list=(
     mpv
     dunst
-    inotify-tools
 )
 
 for pkg in "${package_list[@]}"; do
