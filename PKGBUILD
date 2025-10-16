@@ -5,7 +5,7 @@
 
 # Maintainer: Your Name <youremail@domain.com>
 pkgname=openflexos-configs
-pkgver=1.0.6
+pkgver=1.0.7
 pkgrel=1
 pkgdesc="Default configuration files for OpenFlexOS (test version)"
 arch=(any)
@@ -13,7 +13,7 @@ url="https://github.com/chriskevinlee/TestRepo-OpenFlexOS-Configs"
 license=('GPL')
 backup=('etc/openflexos/*')
 #source=(openflexos-configs.tar.gz)
-source=(https://github.com/chriskevinlee/TestRepo-OpenFlexOS-Configs/raw/refs/heads/main/testrepo-openflexos-configs.tar.gz)
+source=(https://github.com/chriskevinlee/TestRepo-OpenFlexOS-Configs/archive/refs/tags/MyTestTag.tar.gz)
 md5sums=('SKIP') #generate with 'makepkg -g'
 
 package() {
