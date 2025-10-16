@@ -14,9 +14,9 @@ package_list=(
 
 for pkg in "${package_list[@]}"; do
     if ! pacman -Q "$pkg" >/dev/null 2>&1; then
-        echo "$pkg is NOT installed, installing..."
-        dunstify -u normal "$pkg is NOT installed, installing..."
-        zenity --info --text="$pkg is NOT installed, installing..."
+        echo "Message from $0: $pkg is NOT installed, installing..."
+        dunstify -u normal "Message from $0: $pkg is NOT installed, installing..."
+        zenity --info --text="Message from $0: $pkg is NOT installed, installing..."
 
         # Open a new Alacritty window to run the installation
         alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"

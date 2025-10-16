@@ -16,8 +16,10 @@ backup=('etc/openflexos/*')
 source=(https://github.com/chriskevinlee/TestRepo-OpenFlexOS-Configs/archive/refs/tags/MyTestTag.tar.gz)
 md5sums=('SKIP') #generate with 'makepkg -g'
 
+
 package() {
+  cd "$srcdir/TestRepo-OpenFlexOS-Configs-MyTestTag" || exit 1
   install -d "$pkgdir/etc/openflexos"
   cp -r etc/openflexos/* "$pkgdir/etc/openflexos/"
 }
-	
+
