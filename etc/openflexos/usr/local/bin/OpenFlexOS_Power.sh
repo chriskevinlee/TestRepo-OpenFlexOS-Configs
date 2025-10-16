@@ -156,14 +156,15 @@ while getopts "drh" main 2>/dev/null; do
 
             for pkg in "${package_list[@]}"; do
                 if ! pacman -Q "$pkg" >/dev/null 2>&1; then
-                    echo "Message from $0: $pkg is NOT installed, installing..."
-                    dunstify -u normal "Message from $0: $pkg is NOT installed, installing..."
-                    zenity --info --text="Message from $0: $pkg is NOT installed, installing..."
+                    script_name=$(basename "$0")
+                    echo "Message from $script_name: $pkg is NOT installed, installing..."
+                    dunstify -u normal "Message from $script_name: $pkg is NOT installed, installing..."
+                    zenity --info --text="Message from $script_name: $pkg is NOT installed, installing..."
 
-                    # Open a new Alacritty window to run the installation
                     alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
                 fi
             done
+
             power dmenu
             ;;
         r)
@@ -173,14 +174,15 @@ while getopts "drh" main 2>/dev/null; do
 
             for pkg in "${package_list[@]}"; do
                 if ! pacman -Q "$pkg" >/dev/null 2>&1; then
-                    echo "Message from $0: $pkg is NOT installed, installing..."
-                    dunstify -u normal "Message from $0: $pkg is NOT installed, installing..."
-                    zenity --info --text="Message from $0: $pkg is NOT installed, installing..."
+                    script_name=$(basename "$0")
+                    echo "Message from $script_name: $pkg is NOT installed, installing..."
+                    dunstify -u normal "Message from $script_name: $pkg is NOT installed, installing..."
+                    zenity --info --text="Message from $script_name: $pkg is NOT installed, installing..."
 
-                    # Open a new Alacritty window to run the installation
                     alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
                 fi
             done
+
             power rofi
             ;;
         h)

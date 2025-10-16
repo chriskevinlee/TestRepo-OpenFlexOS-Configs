@@ -70,14 +70,15 @@ while getopts "drh" opt 2>/dev/null; do
 
             for pkg in "${package_list[@]}"; do
                 if ! pacman -Q "$pkg" >/dev/null 2>&1; then
-                    echo "Message from $0: $pkg is NOT installed, installing..."
-                    dunstify -u normal "Message from $0: $pkg is NOT installed, installing..."
-                    zenity --info --text="Message from $0: $pkg is NOT installed, installing..."
+                    script_name=$(basename "$0")
+                    echo "Message from $script_name: $pkg is NOT installed, installing..."
+                    dunstify -u normal "Message from $script_name: $pkg is NOT installed, installing..."
+                    zenity --info --text="Message from $script_name: $pkg is NOT installed, installing..."
 
-                    # Open a new Alacritty window to run the installation
                     alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
                 fi
             done
+
             # Use dmenu as the launcher
             dmenu_launcher="dmenu -l 10 -y 20 -x 20 -z 1880 -i -p"
             ssh_menu "$dmenu_launcher"
@@ -91,14 +92,15 @@ while getopts "drh" opt 2>/dev/null; do
 
             for pkg in "${package_list[@]}"; do
                 if ! pacman -Q "$pkg" >/dev/null 2>&1; then
-                    echo "Message from $0: $pkg is NOT installed, installing..."
-                    dunstify -u normal "Message from $0: $pkg is NOT installed, installing..."
-                    zenity --info --text="Message from $0: $pkg is NOT installed, installing..."
+                    script_name=$(basename "$0")
+                    echo "Message from $script_name: $pkg is NOT installed, installing..."
+                    dunstify -u normal "Message from $script_name: $pkg is NOT installed, installing..."
+                    zenity --info --text="Message from $script_name: $pkg is NOT installed, installing..."
 
-                    # Open a new Alacritty window to run the installation
                     alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
                 fi
             done
+
             # Use rofi as the launcher
             ssh_menu rofi_cmd
             ;;
