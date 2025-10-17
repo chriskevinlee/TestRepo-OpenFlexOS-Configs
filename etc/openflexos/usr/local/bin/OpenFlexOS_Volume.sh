@@ -10,6 +10,7 @@
 package_list=(
     pipewire-pulse
     dunst
+    ttf-nerd-fonts-symbols
 )
 
 for pkg in "${package_list[@]}"; do

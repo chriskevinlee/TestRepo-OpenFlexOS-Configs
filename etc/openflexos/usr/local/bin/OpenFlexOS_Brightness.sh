@@ -11,6 +11,7 @@
 package_list=(
     brightnessctl
     dunst
+    ttf-nerd-fonts-symbols
 )
 
 for pkg in "${package_list[@]}"; do

@@ -134,7 +134,7 @@ while getopts "rdh" main 2>/dev/null; do
                 rofi
                 networkmanager
                 dunst
-                NerdFontsSymbolsOnly
+                ttf-nerd-fonts-symbols
             )
 
             for pkg in "${package_list[@]}"; do
@@ -155,7 +155,7 @@ while getopts "rdh" main 2>/dev/null; do
                 openflexos-dmenu
                 networkmanager
                 dunst
-                NerdFontsSymbolsOnly
+                ttf-nerd-fonts-symbols
             )
 
             for pkg in "${package_list[@]}"; do

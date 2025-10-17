@@ -66,6 +66,7 @@ while getopts "drh" opt 2>/dev/null; do
                 openflexos-dmenu
                 openssh
                 alacritty
+                ttf-nerd-fonts-symbols
             )
 
             for pkg in "${package_list[@]}"; do
@@ -88,6 +89,7 @@ while getopts "drh" opt 2>/dev/null; do
                 rofi
                 openssh
                 alacritty
+                ttf-nerd-fonts-symbols
             )
 
             for pkg in "${package_list[@]}"; do

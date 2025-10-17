@@ -152,6 +152,7 @@ while getopts "drh" main 2>/dev/null; do
         d)
             package_list=(
                 openflexos-dmenu
+                ttf-nerd-fonts-symbols
             )
 
             for pkg in "${package_list[@]}"; do
@@ -170,6 +171,7 @@ while getopts "drh" main 2>/dev/null; do
         r)
             package_list=(
                 rofi
+                ttf-nerd-fonts-symbols
             )
 
             for pkg in "${package_list[@]}"; do

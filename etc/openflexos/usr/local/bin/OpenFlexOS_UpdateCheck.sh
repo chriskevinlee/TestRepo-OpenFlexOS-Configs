@@ -2,6 +2,7 @@
 
 package_list=(
     alacritty
+    ttf-nerd-fonts-symbols
 )
 
 for pkg in "${package_list[@]}"; do
