@@ -5,4 +5,4 @@
 - https://github.com/birbkeks/win11-sddm-theme  
 **License:** MIT License  
 **Modifications by:** Christopher Lee  
-(Changed background image, added “Go Back to Full Screen Wallpaper” feature)
+( Reanmed openflexos-sddm-theme from win11-sddm-theme, Changed background image, added “Go Back to Full Screen Wallpaper” feature)
