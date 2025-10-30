@@ -45,15 +45,6 @@ def get_script_path(script_name):
     # Fallback to original flat path
     return os.path.join(base_dir, script_name)
 
-
-
-
-
-
-# def get_script_path(script_name):
-#   home_dir = os.path.expanduser("~")
-#   return os.path.join(home_dir, ".config", "qtile", "scripts", script_name)
-
 # Function to auto-start applicaions/proesses at login
 @hook.subscribe.startup_once
 def autostart():
@@ -83,7 +74,6 @@ def powerline_separator_left(fg, bg, enable=True):
         foreground=fg,
         background=bg,
     )
-
 
 
 def battery_widget():
@@ -206,9 +196,6 @@ nmcli_widget = widget.GenPollText(
     background=colors["green"],
     padding=8,
 )
-
-
-
 
 #############################################################
 ############### Bar #######################################
@@ -384,9 +371,6 @@ if __name__ in ["config", "__main__"]:
 ############### Variables ###################################
 #############################################################
 
-
-
-
 # Alternative modifier key (Alt key)
 alt = "mod1"
 
@@ -395,10 +379,6 @@ mod = "mod4"
 
 # Automatically detect the default terminal emulator
 terminal = guess_terminal()
-
-# Define workspaces/groups (1-9) for window management
-#groups = [Group(i) for i in "123456789"]
-groups = [Group(i) for i in "12345"]
 
 # No key bindings for dynamically assigned groups
 dgroups_key_binder = None
@@ -531,26 +511,13 @@ keys = [
         ),
     ], mode="Launcher"),
 
-  KeyChord([alt], "k", [
-        Key([], "d",
-            lazy.spawn(get_script_path("OpenFlexOS_Menu.sh") + " -d"),
-            lazy.ungrab_chord(),
-            desc="Dmenu"
-        ),
-        Key([], "r",
-            lazy.spawn(get_script_path("OpenFlexOS_Menu.sh") + " -r"),
-            lazy.ungrab_chord(),
-            desc="Rofi"
-        ),
-    ], mode="Launcher"),
- 
-]    # Key Chord for Power Menu
+    # Key Chord for Power Menu
     KeyChord([alt], "p", [
         Key([], "d",
             lazy.spawn(get_script_path("OpenFlexOS_Power.sh") + " -d"),
             lazy.ungrab_chord(),
             desc="Dmenu"
-        )i,
+        ),
         Key([], "r",
             lazy.spawn(get_script_path("OpenFlexOS_Power.sh") + " -r"),
             lazy.ungrab_chord(),
@@ -571,6 +538,35 @@ keys = [
             desc="Rofi"
         ),
     ], mode="SSH"),
+
+
+    # Key Chord for Network Menu
+    KeyChord([alt], "k", [
+        Key([], "d",
+            lazy.spawn(get_script_path("OpenFlexOS_Menu.sh") + " -d"),
+            lazy.ungrab_chord(),
+            desc="Dmenu"
+        ),
+        Key([], "r",
+            lazy.spawn(get_script_path("OpenFlexOS_Menu.sh") + " -r"),
+            lazy.ungrab_chord(),
+            desc="Rofi"
+        ),
+    ], mode="Launcher"),
+
+    # Key Chord for Network Menu
+    KeyChord([alt], "n", [
+        Key([], "d",
+            lazy.spawn(get_script_path("OpenFlexOS_Network.sh") + " -d"),
+            lazy.ungrab_chord(),
+            desc="Dmenu"
+        ),
+        Key([], "r",
+            lazy.spawn(get_script_path("OpenFlexOS_Network.sh") + " -r"),
+            lazy.ungrab_chord(),
+            desc="Rofi"
+        ),
+    ], mode="Launcher"),
 
     # Key Chord for Network Menu
     KeyChord([alt], "n", [
@@ -718,26 +714,40 @@ for vt in range(1, 8):
         )
     )
 
-for i in groups:
-    keys.extend(
-        [
-            # mod + group number = switch to group
-            Key(
-                [mod],
-                i.name,
-                lazy.group[i.name].toscreen(),
-                desc="Switch to group {}".format(i.name),
-            ),
-            # mod + shift + group number = switch to & move focused window to group
-            Key(
-                [mod, "shift"],
-                i.name,
-                lazy.window.togroup(i.name, switch_group=True),
-                desc="Switch to & move focused window to group {}".format(i.name),
-            ),
-            # Or, use below if you prefer not to switch to that group.
-            # # mod + shift + group number = move focused window to group
-            # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
-            #     desc="move focused window to group {}".format(i.name)),
-        ]
+# --- Define static groups (permanent workspaces) ---
+static_groups = ["1", "2", "3", "4"]
+groups = [Group(i) for i in static_groups]
+
+# --- Dynamic workspace creation ---
+@lazy.function
+def go_to_or_create_group(qtile, group_name):
+    """Go to group if it exists, otherwise create it dynamically."""
+    if group_name not in qtile.groups_map:
+        qtile.add_group(group_name)
+    qtile.groups_map[group_name].toscreen()
+
+# --- Keybindings for mod+[1–9] ---
+for i in range(1, 10):
+    keys.append(
+        Key([mod], str(i),
+            go_to_or_create_group(str(i)),
+            desc=f"Go to or create group {i}")
     )
+
+# --- Hooks to clean up empty dynamic groups ---
+@hook.subscribe.client_killed
+def remove_empty_dynamic_groups(client):
+    """Delete dynamic groups when their last window closes."""
+    group = client.group
+    if group.name not in static_groups and len(group.windows) == 0:
+        # Delay slightly to allow Qtile to update internal state
+        client.qtile.call_later(0.5, lambda: client.qtile.delete_group(group.name))
+
+@hook.subscribe.setgroup
+def remove_empty_groups_on_switch():
+    """Also delete empty dynamic groups when switching away."""
+    current_group = qtile.current_group
+    for g in list(qtile.groups_map.values()):
+        if g.name not in static_groups and g != current_group:
+            if len(g.windows) == 0:
+                qtile.delete_group(g.name)
