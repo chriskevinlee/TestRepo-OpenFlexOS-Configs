@@ -531,13 +531,26 @@ keys = [
         ),
     ], mode="Launcher"),
 
-    # Key Chord for Power Menu
+  KeyChord([alt], "k", [
+        Key([], "d",
+            lazy.spawn(get_script_path("OpenFlexOS_Menu.sh") + " -d"),
+            lazy.ungrab_chord(),
+            desc="Dmenu"
+        ),
+        Key([], "r",
+            lazy.spawn(get_script_path("OpenFlexOS_Menu.sh") + " -r"),
+            lazy.ungrab_chord(),
+            desc="Rofi"
+        ),
+    ], mode="Launcher"),
+ 
+]    # Key Chord for Power Menu
     KeyChord([alt], "p", [
         Key([], "d",
             lazy.spawn(get_script_path("OpenFlexOS_Power.sh") + " -d"),
             lazy.ungrab_chord(),
             desc="Dmenu"
-        ),
+        )i,
         Key([], "r",
             lazy.spawn(get_script_path("OpenFlexOS_Power.sh") + " -r"),
             lazy.ungrab_chord(),
