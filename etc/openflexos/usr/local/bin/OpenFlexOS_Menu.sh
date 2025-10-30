@@ -29,11 +29,6 @@ done
 # --- Find executable scripts (including symlinks) ---
 SCRIPTS=$(find -L "$MENU_DIR" -maxdepth 1 \( -type f -o -type l \) -executable -printf "%f\n" | sort)
 
-if [ -z "$SCRIPTS" ]; then
-  notify-send "Menu Launcher" "No executable scripts or links found in $MENU_DIR"
-  exit 1
-fi
-
 # --- Display menu ---
 case "$MENU_TOOL" in
   rofi)
