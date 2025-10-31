@@ -25,25 +25,43 @@ colors = data["Themes"][theme_name]
 #############################################################
 
 # Function to get script's Path to then call on later
+import os
+
 def get_script_path(script_name):
     """
     Search recursively under ~/.config/qtile/scripts for the given script name.
-    Returns the full path if found, or None if not found.
+    Supports both 'OpenFlexOS_Power.sh' and 'Power' style names.
+    Returns the first full path found, or None if not found.
     """
+
     base_dir = os.path.expanduser("~/.config/qtile/scripts")
 
-    # Build list of all subdirectories first (non-blocking small operation)
+    # Build possible filename variants
+    # This lets you call get_script_path("OpenFlexOS_Power.sh") OR get_script_path("Power")
+    name_core = script_name.replace("OpenFlexOS_", "").replace(".sh", "")
+    variants = [
+        script_name,                       # e.g. "OpenFlexOS_Power.sh"
+        f"{name_core}",                    # e.g. "Power"
+        f"{name_core}.sh",                 # e.g. "Power.sh"
+        f"OpenFlexOS_{name_core}.sh",      # e.g. "OpenFlexOS_Power.sh"
+    ]
+
     try:
         for root, dirs, files in os.walk(base_dir):
-            # simple membership test, stops on first match
-            if script_name in files:
-                return os.path.join(root, script_name)
+            for f in files:
+                if f in variants:
+                    return os.path.join(root, f)
     except Exception as e:
-        # silently ignore errors like permission denied
         print(f"[Qtile] get_script_path error: {e}")
 
-    # Fallback to original flat path
-    return os.path.join(base_dir, script_name)
+    # Fallback: try direct join guesses (non-recursive)
+    for variant in variants:
+        guess = os.path.join(base_dir, variant)
+        if os.path.exists(guess):
+            return guess
+
+    print(f"[Qtile] get_script_path: no match for {script_name} (variants tried: {variants})")
+    return None
 
 # Function to auto-start applicaions/proesses at login
 @hook.subscribe.startup_once
