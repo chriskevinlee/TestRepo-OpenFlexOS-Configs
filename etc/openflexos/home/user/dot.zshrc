@@ -55,14 +55,6 @@ alias n='nano'
 alias v='vim'
 alias s='sudo'
 
-vim() {
-    if [ "$1" = "-n" ]; then
-        shift
-        command vim +"set number" "$@"
-    else
-        command vim "$@"
-    fi
-}
 
 if command -v apt >> /dev/null; then
     alias a='apt'
