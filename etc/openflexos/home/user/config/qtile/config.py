@@ -732,6 +732,7 @@ for vt in range(1, 8):
         )
     )
 
+
 # --- Define static groups (permanent workspaces) ---
 static_groups = ["1", "2", "3", "4"]
 groups = [Group(i) for i in static_groups]
@@ -744,13 +745,29 @@ def go_to_or_create_group(qtile, group_name):
         qtile.add_group(group_name)
     qtile.groups_map[group_name].toscreen()
 
-# --- Keybindings for mod+[1–9] ---
+@lazy.function
+def move_window_to_group(qtile, group_name):
+    """Move focused window to a group, creating it if necessary."""
+    if group_name not in qtile.groups_map:
+        qtile.add_group(group_name)
+    window = qtile.current_window
+    if window is not None:
+        window.togroup(group_name)
+        # Optional: also switch to that group
+        qtile.groups_map[group_name].toscreen()
+
+# --- Keybindings for mod+[1–9] and mod+shift+[1–9] ---
 for i in range(1, 10):
-    keys.append(
+    keys.extend([
+        # Switch to workspace (create if needed)
         Key([mod], str(i),
             go_to_or_create_group(str(i)),
-            desc=f"Go to or create group {i}")
-    )
+            desc=f"Go to or create group {i}"),
+        # Move focused window to workspace (create if needed)
+        Key([mod, "shift"], str(i),
+            move_window_to_group(str(i)),
+            desc=f"Move window to group {i}")
+    ])
 
 # --- Hooks to clean up empty dynamic groups ---
 @hook.subscribe.client_killed
@@ -769,3 +786,4 @@ def remove_empty_groups_on_switch():
         if g.name not in static_groups and g != current_group:
             if len(g.windows) == 0:
                 qtile.delete_group(g.name)
+
