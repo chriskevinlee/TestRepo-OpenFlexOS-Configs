@@ -152,7 +152,7 @@ while getopts "rdh" main 2>/dev/null; do
             ;;
         d)
             package_list=(
-                openflexos-dmenu
+                dmenu
                 networkmanager
                 dunst
                 ttf-nerd-fonts-symbols
@@ -169,7 +169,7 @@ while getopts "rdh" main 2>/dev/null; do
                 fi
             done
 
-            dmenu_launcher="dmenu -l 10 -y 20 -x 20 -z 1880 -i -p"
+            dmenu_launcher=""dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "What Would you likr to do?"
             wifi_network "$dmenu_launcher"
             ;;
         h)
