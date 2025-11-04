@@ -33,7 +33,7 @@ while getopts "drh" main 2>/dev/null; do
   case "${main}" in
     d )
         package_list=(
-            openflexos-dmenu
+            dmenu
             ttf-nerd-fonts-symbols
         )
 
@@ -69,7 +69,7 @@ while getopts "drh" main 2>/dev/null; do
       done
 
       # Show only the application names in dmenu
-      app=$(printf '%s\n' "${!app_map[@]}" | sort -u | dmenu -l 15 -y 20 -x 20 -z 1880 -i -p "Launch Application")
+      app=$(printf '%s\n' "${!app_map[@]}" | sort -u | dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "Launch Application")
 
       # Launch the selected application if it exists in the map
       if [ -n "$app" ] && [ -n "${app_map[$app]}" ]; then

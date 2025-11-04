@@ -51,7 +51,7 @@ while getopts "drh" main 2>/dev/null; do
     case "${main}" in
         d)
             package_list=(
-                openflexos-dmenu
+                dmenu
             )
 
             for pkg in "${package_list[@]}"; do
@@ -66,7 +66,7 @@ while getopts "drh" main 2>/dev/null; do
             done
 
 
-            launcher="dmenu -l 10 -i"
+            launcher="dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "Launch Application""
             web_menu
             ;;
         r)

@@ -35,7 +35,7 @@ case "$MENU_TOOL" in
     CHOICE=$(echo "$SCRIPTS" | rofi -dmenu -p "Run script:")
     ;;
   dmenu)
-    CHOICE=$(echo "$SCRIPTS" | dmenu -l 15 -p "Run script:")
+    CHOICE=$(echo "$SCRIPTS" | dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "Run:")
     ;;
 esac
 

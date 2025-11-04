@@ -63,7 +63,7 @@ while getopts "drh" opt 2>/dev/null; do
     case "$opt" in
         d)
             package_list=(
-                openflexos-dmenu
+                dmenu
                 openssh
                 alacritty
                 ttf-nerd-fonts-symbols
@@ -81,7 +81,7 @@ while getopts "drh" opt 2>/dev/null; do
             done
 
             # Use dmenu as the launcher
-            dmenu_launcher="dmenu -l 10 -y 20 -x 20 -z 1880 -i -p"
+            dmenu_launcher="dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "Select SSH Server:""
             ssh_menu "$dmenu_launcher"
             ;;
         r)

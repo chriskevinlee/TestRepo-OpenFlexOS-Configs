@@ -34,7 +34,7 @@ power() {
     if [[ "$1" == "rofi" ]]; then
         launcher="rofi -i -config /home/$USER/.config/$WM/rofi/config.rasi -dmenu"
     elif [[ "$1" == "dmenu" ]]; then
-        launcher="dmenu -l 10 -y 20 -x 20 -z 1880 -i"
+        launcher="dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "Power"
     else
         echo "Invalid launcher type"
         exit 1
@@ -151,7 +151,7 @@ while getopts "drh" main 2>/dev/null; do
     case "${main}" in
         d)
             package_list=(
-                openflexos-dmenu
+                dmenu
                 ttf-nerd-fonts-symbols
             )
 
