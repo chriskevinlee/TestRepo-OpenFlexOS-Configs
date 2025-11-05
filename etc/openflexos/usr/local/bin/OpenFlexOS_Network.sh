@@ -1,7 +1,6 @@
 #!/bin/bash
-
 # ================================================================
-# Description: Combined Wifi Menu using Rofi or Dmenu and status display
+# Description: Combined WiFi Menu using Rofi or Dmenu and status display
 # Author: Chris Lee, ChatGPT
 # Dependencies: rofi, dmenu, networkmanager, dunstify, NerdFontsSymbolsOnly
 # ================================================================
@@ -10,7 +9,9 @@ wifi_icon=""
 ethernet_icon=""
 disconnected_icon=""
 
+# ---------------------------------------------------------------
 # Detect window manager
+# ---------------------------------------------------------------
 if pgrep -x qtile >/dev/null; then
     WM="qtile"
 elif pgrep -x openbox >/dev/null; then
@@ -19,36 +20,43 @@ else
     WM="unknown"
 fi
 
-# Function to call Rofi directly
+# ---------------------------------------------------------------
+# Rofi launcher helper
+# ---------------------------------------------------------------
 rofi_cmd() {
-    if [[ -z "$1" ]]; then prompt="Select an option"; else prompt="$1"; fi
+    local prompt="${1:-Select an option}"
 
-    if [[ "$WM" == "qtile" ]]; then
-        rofi -config "$HOME/.config/qtile/rofi/config.rasi" -dmenu -p "$prompt"
-    elif [[ "$WM" == "openbox" ]]; then
-        rofi -config "$HOME/.config/openbox/rofi/config.rasi" -dmenu -p "$prompt"
-    else
-        rofi -dmenu -p "$prompt"
-    fi
+    case "$WM" in
+        qtile)
+            rofi -config "$HOME/.config/qtile/rofi/config.rasi" -dmenu -i -p "$prompt"
+            ;;
+        openbox)
+            rofi -config "$HOME/.config/openbox/rofi/config.rasi" -dmenu -i -p "$prompt"
+            ;;
+        *)
+            rofi -dmenu -i -p "$prompt"
+            ;;
+    esac
 }
 
-# Function to display network status
-status_network(){
-    state_file="/tmp/prev_network_state"
+# ---------------------------------------------------------------
+# Display current network status
+# ---------------------------------------------------------------
+status_network() {
+    local state_file="/tmp/prev_network_state"
 
     nmcli device wifi rescan &>/dev/null
 
+    local check_wifi check_ethernet connected_ssid current_state previous_state
     check_wifi="$(nmcli device status | grep -w wifi | grep -w connected | awk '{ print $2 }')"
     check_ethernet="$(nmcli device status | grep -w ethernet | grep -w connected | awk '{ print $2 }')"
-    check_ethernet_wifi="$(nmcli device status | grep -e ethernet -e wifi | grep -w connected | awk '{ print $2 }' | sed 'N;s/\n/ /')"
-
     connected_ssid=$(nmcli -t -f active,ssid dev wifi | grep '^yes' | cut -d':' -f2)
 
-    if [[ $check_ethernet_wifi = "ethernet wifi" ]]; then
+    if [[ $check_wifi == "wifi" && $check_ethernet == "ethernet" ]]; then
         current_state="$ethernet_icon $wifi_icon $connected_ssid"
-    elif [[ $check_wifi = "wifi" ]]; then
+    elif [[ $check_wifi == "wifi" ]]; then
         current_state="$wifi_icon $connected_ssid"
-    elif [[ $check_ethernet = "ethernet" ]]; then
+    elif [[ $check_ethernet == "ethernet" ]]; then
         current_state="$ethernet_icon"
     else
         current_state="$disconnected_icon"
@@ -59,125 +67,138 @@ status_network(){
     if [[ $current_state != "$previous_state" ]]; then
         case "$current_state" in
             "$disconnected_icon") dunstify -u critical "Network Disconnected" ;;
-            "$wifi_icon"*) dunstify -u normal "Connected to Wi-Fi" ;;
+            "$wifi_icon"*) dunstify -u normal "Connected to Wi-Fi: $connected_ssid" ;;
             "$ethernet_icon") dunstify -u normal "Connected to Ethernet" ;;
-            "$ethernet_icon $wifi_icon"*) dunstify -u normal "Connected to Ethernet and Wi-Fi" ;;
+            "$ethernet_icon $wifi_icon"*) dunstify -u normal "Connected to Ethernet and Wi-Fi: $connected_ssid" ;;
         esac
     fi
 
     echo "$current_state" > "$state_file"
     echo "$current_state"
-    exit 0
 }
 
-# WiFi menu function: accepts a launcher as argument
+# ---------------------------------------------------------------
+# Wi-Fi Menu core logic
+# ---------------------------------------------------------------
 wifi_network() {
-    local launcher_func="$1"
+    local launcher=("$@")
 
-    main_message="WiFi Manager:\nWhat would you like to do?"
-    main_menu=$(echo -e "󱚽 Connect to a Wifi Network\n󰖪 Enable Or Disable Wifi\n󱛅 Forget a Wifi Network" | $launcher_func "$main_message")
+    local main_menu
 
-    if [[ $main_menu = "󱚽 Connect to a Wifi Network" ]]; then
-        wifi_list=$(nmcli --fields SSID,ACTIVE device wifi list | sed '/^$/d' | grep -v -e '^--' -e '^SSID' | awk -F'  +' '{if ($2 == "yes") print $1 " (active)"; else print $1}' | sort -u)
-        connect_wifi="WiFi Manager:\nChoose a Wifi Network"
-        wifi_ssid=$(echo "$wifi_list" | $launcher_func "$connect_wifi")
-
-        [[ -z $wifi_ssid ]] && exit 0
-        wifi_ssid="${wifi_ssid// (active)/}"
-
-        saved_connection=$(nmcli -g NAME connection show --active | grep -F "$wifi_ssid")
-        if [[ -n $saved_connection ]]; then
-            nmcli connection up "$wifi_ssid"
-            status=$?
-        else
-            password=$(zenity --password --title="WiFi Manager: Enter password for $wifi_ssid")
-            nmcli device wifi connect "$wifi_ssid" password "$password"
-            status=$?
-        fi
-
-        if [[ $status -eq 0 ]] && nmcli -t -f active,ssid dev wifi | grep '^yes' | grep -q "$wifi_ssid"; then
-            dunstify -u normal "Connected to $wifi_ssid"
-        else
-            nmcli connection delete "$wifi_ssid" &>/dev/null
-            dunstify -u critical "Failed to connect to $wifi_ssid. Please run the script again to retry."
-            exit 1
-        fi
-
-    elif [[ $main_menu = "󰖪 Enable Or Disable Wifi" ]]; then
-        wifi_status=$(nmcli radio wifi)
-        if [[ $wifi_status == "enabled" ]]; then
-            nmcli radio wifi off
-            dunstify -u normal "WiFi Radio Off"
-        else
-            nmcli radio wifi on
-            dunstify -u normal "WiFi Radio On"
-        fi
-
-    elif [[ $main_menu = "󱛅 Forget a Wifi Network" ]]; then
-        saved_wifi_connections=$(nmcli -f NAME,TYPE connection show | grep wifi | awk '{$NF=""; sub(/[ \t]+$/, ""); print}' | sort -u)
-        wifi_forget="WiFi Manager:\nChoose a Wifi Network to Forget"
-        forget_ssid=$(echo "$saved_wifi_connections" | $launcher_func "$wifi_forget")
-        [[ -n $forget_ssid ]] && nmcli connection delete "$forget_ssid" && dunstify -u normal "$forget_ssid Deleted"
+    if [[ "${launcher[0]}" == "rofi_cmd" ]]; then
+        main_menu=$(echo -e "󱚽 Connect to a Wi-Fi Network\n󰖪 Enable or Disable Wi-Fi\n󱛅 Forget a Wi-Fi Network" | rofi_cmd "Wi-Fi Manager:")
+    else
+        main_menu=$(echo -e "󱚽 Connect to a Wi-Fi Network\n󰖪 Enable or Disable Wi-Fi\n󱛅 Forget a Wi-Fi Network" | "${launcher[@]}" -p "Wi-Fi Manager:")
     fi
+
+    case "$main_menu" in
+        "󱚽 Connect to a Wi-Fi Network")
+            local wifi_list wifi_ssid password status
+            wifi_list=$(nmcli --fields SSID,ACTIVE device wifi list | sed '/^$/d' | grep -v -e '^--' -e '^SSID' | awk -F'  +' '{if ($2 == "yes") print $1 " (active)"; else print $1}' | sort -u)
+
+            if [[ "${launcher[0]}" == "rofi_cmd" ]]; then
+                wifi_ssid=$(echo "$wifi_list" | rofi_cmd "Select Wi-Fi:")
+            else
+                wifi_ssid=$(echo "$wifi_list" | "${launcher[@]}" -p "Select Wi-Fi:")
+            fi
+
+            [[ -z $wifi_ssid ]] && exit 0
+            wifi_ssid="${wifi_ssid// (active)/}"
+
+            if nmcli -g NAME connection show | grep -Fxq "$wifi_ssid"; then
+                nmcli connection up "$wifi_ssid"
+                status=$?
+            else
+                password=$(zenity --password --title="Wi-Fi Password for $wifi_ssid")
+                nmcli device wifi connect "$wifi_ssid" password "$password"
+                status=$?
+            fi
+
+            if [[ $status -eq 0 ]]; then
+                dunstify -u normal "Connected to $wifi_ssid"
+            else
+                nmcli connection delete "$wifi_ssid" &>/dev/null
+                dunstify -u critical "Failed to connect to $wifi_ssid. Try again."
+            fi
+            ;;
+        "󰖪 Enable or Disable Wi-Fi")
+            local wifi_status
+            wifi_status=$(nmcli radio wifi)
+            if [[ $wifi_status == "enabled" ]]; then
+                nmcli radio wifi off
+                dunstify -u normal "Wi-Fi Disabled"
+            else
+                nmcli radio wifi on
+                dunstify -u normal "Wi-Fi Enabled"
+            fi
+            ;;
+        "󱛅 Forget a Wi-Fi Network")
+            local saved_wifi forget_ssid
+            saved_wifi=$(nmcli -f NAME,TYPE connection show | grep wifi | awk '{print $1}' | sort -u)
+
+            if [[ "${launcher[0]}" == "rofi_cmd" ]]; then
+                forget_ssid=$(echo "$saved_wifi" | rofi_cmd "Forget which Wi-Fi?")
+            else
+                forget_ssid=$(echo "$saved_wifi" | "${launcher[@]}" -p "Forget which Wi-Fi?")
+            fi
+
+            [[ -n $forget_ssid ]] && nmcli connection delete "$forget_ssid" && dunstify -u normal "$forget_ssid removed"
+            ;;
+    esac
 }
 
-# Default action if no args are provided
+# ---------------------------------------------------------------
+# Default action (no args → show status)
+# ---------------------------------------------------------------
 if [[ $# -eq 0 ]]; then
     status_network
+    exit 0
 fi
 
-# Parse command-line arguments
-while getopts "rdh" main 2>/dev/null; do
-    case "$main" in
+# ---------------------------------------------------------------
+# Install missing dependencies helper
+# ---------------------------------------------------------------
+install_missing() {
+    local packages=("$@")
+    for pkg in "${packages[@]}"; do
+        if ! pacman -Q "$pkg" >/dev/null 2>&1; then
+            echo "Installing $pkg..."
+            dunstify -u normal "Installing $pkg..."
+            alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
+        fi
+    done
+}
+
+# ---------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------
+while getopts "rdh" opt 2>/dev/null; do
+    case "$opt" in
         r)
-            package_list=(
-                rofi
-                networkmanager
-                dunst
-                ttf-nerd-fonts-symbols
-            )
-
-            for pkg in "${package_list[@]}"; do
-                if ! pacman -Q "$pkg" >/dev/null 2>&1; then
-                    script_name=$(basename "$0")
-                    echo "Message from $script_name: $pkg is NOT installed, installing..."
-                    dunstify -u normal "Message from $script_name: $pkg is NOT installed, installing..."
-                    zenity --info --text="Message from $script_name: $pkg is NOT installed, installing..."
-
-                    alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
-                fi
-            done
-
+            install_missing rofi networkmanager dunst ttf-nerd-fonts-symbols
             wifi_network rofi_cmd
             ;;
         d)
-            package_list=(
+            install_missing dmenu networkmanager dunst ttf-nerd-fonts-symbols
+
+            dmenu_launcher=(
                 dmenu
-                networkmanager
-                dunst
-                ttf-nerd-fonts-symbols
+                -nb "#1e1e2e"
+                -nf "#cdd6f4"
+                -sb "#89b4fa"
+                -sf "#1e1e2e"
+                -l 15
+                -i
             )
 
-            for pkg in "${package_list[@]}"; do
-                if ! pacman -Q "$pkg" >/dev/null 2>&1; then
-                    script_name=$(basename "$0")
-                    echo "Message from $script_name: $pkg is NOT installed, installing..."
-                    dunstify -u normal "Message from $script_name: $pkg is NOT installed, installing..."
-                    zenity --info --text="Message from $script_name: $pkg is NOT installed, installing..."
-
-                    alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
-                fi
-            done
-
-            dmenu_launcher=""dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "What Would you likr to do?"
-            wifi_network "$dmenu_launcher"
+            wifi_network "${dmenu_launcher[@]}"
             ;;
         h)
-            echo "A script to manage WiFi network and display current network status"
-            echo "Usage: $(basename "$0") [ARGUMENT]"
+            echo "Wi-Fi Manager Script"
+            echo "Usage: $(basename "$0") [-r | -d | -h]"
             echo ""
-            printf "%-30s %s\n" " -r" "Use Rofi to manage WiFi"
-            printf "%-30s %s\n" " -d" "Use Dmenu to manage WiFi"
+            printf "%-30s %s\n" " -r" "Use Rofi to manage Wi-Fi"
+            printf "%-30s %s\n" " -d" "Use Dmenu to manage Wi-Fi"
             printf "%-30s %s\n" " -h" "Show this help message"
             ;;
         *)
@@ -185,4 +206,5 @@ while getopts "rdh" main 2>/dev/null; do
             exit 1
             ;;
     esac
+    exit 0
 done
