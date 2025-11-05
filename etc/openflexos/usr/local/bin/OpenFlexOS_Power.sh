@@ -34,7 +34,7 @@ power() {
     if [[ "$1" == "rofi" ]]; then
         launcher="rofi -i -config /home/$USER/.config/$WM/rofi/config.rasi -dmenu"
     elif [[ "$1" == "dmenu" ]]; then
-        launcher="dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "Power"
+        launcher='dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "Power"'
     else
         echo "Invalid launcher type"
         exit 1
