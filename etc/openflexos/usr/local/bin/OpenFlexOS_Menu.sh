@@ -17,7 +17,6 @@ mkdir -p "$MENU_DIR"
 echo "󰍜 $USER"
 
 # --- Parse command-line arguments ---
-MENU_TOOL="auto"
 while getopts ":rdh" opt; do
   case $opt in
     r) MENU_TOOL="rofi" ;;
@@ -36,18 +35,6 @@ done
 
 # --- Find executable scripts (including symlinks) ---
 SCRIPTS=$(find -L "$MENU_DIR" -maxdepth 1 \( -type f -o -type l \) -executable -printf "%f\n" | sort)
-
-# --- Auto-detect tool if none specified ---
-if [[ "$MENU_TOOL" == "auto" ]]; then
-  if command -v rofi >/dev/null 2>&1; then
-    MENU_TOOL="rofi"
-  elif command -v dmenu >/dev/null 2>&1; then
-    MENU_TOOL="dmenu"
-  else
-    echo "Error: neither rofi nor dmenu found." >&2
-    exit 1
-  fi
-fi
 
 # --- Define launchers ---
 ROFI_CONFIG="$HOME/.config/qtile/rofi/config.rasi"
