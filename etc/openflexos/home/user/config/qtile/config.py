@@ -559,7 +559,7 @@ keys = [
 
 
     # Key Chord for Network Menu
-    KeyChord([alt], "k", [
+    KeyChord([alt], "m", [
         Key([], "d",
             lazy.spawn(get_script_path("OpenFlexOS_Menu.sh") + " -d"),
             lazy.ungrab_chord(),
@@ -633,7 +633,7 @@ keys = [
         ),
     ], mode="Screenshot"),
 
-    KeyChord([alt], "m", [
+    KeyChord([alt], "e", [
         Key([], "r",
             lazy.spawn("/etc/openflexos/usr/local/bin/OpenFlexOS_WebBookmarker.sh -r"),
             lazy.ungrab_chord(),
