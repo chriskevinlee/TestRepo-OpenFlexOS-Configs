@@ -12,13 +12,37 @@ from libqtile.utils import guess_terminal
 from libqtile import hook
 from libqtile.widget import TextBox
 
+from qtile_extras.widget.decorations import PowerLineDecoration
+from qtile_extras import widget
+
 import json
-theme_path = os.path.expanduser("~/.config/MyThemes/MyThemes.json")
-with open(theme_path) as f:
+with open(os.path.expanduser("~/.config/themes.json")) as f:
     data = json.load(f)
 
-theme_name = data["Current_Theme"]
-colors = data["Themes"][theme_name]
+theme_name = data["current"]
+colors = data["themes"][theme_name]
+
+powerlineleft = {
+    "decorations": [
+        PowerLineDecoration(
+            path="arrow_left",
+            filled=True,
+            size=20,
+            padding_y=0,
+        )
+    ]
+}
+
+powerlineright = {
+    "decorations": [
+        PowerLineDecoration(
+            path="arrow_right",
+            filled=True,
+            size=20,
+            padding_y=0,
+        )
+    ]
+}
 
 #############################################################
 ############### Functions ###################################
@@ -70,29 +94,19 @@ def autostart():
     script = os.path.join(home_dir, ".config", "qtile", "OpenFlexOS_AutoStart.sh")
     subprocess.Popen([script])
 
+# Allow Copy Info
+def copy_info_widget():
+    text = qtile.widgets_map["Info"].text
 
-def powerline_separator_right(fg, bg, enable=True):
-    if not enable:
-        return None
-    return widget.TextBox(
-        text="",
-        fontsize=25,
-        padding=0,
-        foreground=fg,
-        background=bg,
+    # Split on first ":" and trim whitespace
+    if ":" in text:
+        text = text.split(":", 1)[1].strip()
+
+    subprocess.run(
+        ["xclip", "-selection", "clipboard"],
+        input=text,
+        text=True,
     )
-
-def powerline_separator_left(fg, bg, enable=True):
-    if not enable:
-        return None
-    return widget.TextBox(
-        text="",
-        fontsize=25,
-        padding=0,
-        foreground=fg,
-        background=bg,
-    )
-
 
 def battery_widget():
     if os.path.exists("/sys/class/power_supply/BAT1"):
@@ -104,8 +118,8 @@ def battery_widget():
             format="{char} {percent:2.0%}",  # Ensure "Full" text is removed
             show_short_text=False,  # Prevents Qtile from displaying "Full"
             update_interval=1,
-            foreground=colors["background"],
-            background=colors["gray"],
+            foreground=colors["fg"],
+            background=colors["bg"],
 
         )
     else:
@@ -128,7 +142,7 @@ def resize_floating_window(qtile, width: int = 0, height: int = 0):
 # Function to display Screen brightnless and allow left click and right click
 class BrightnessWidget(TextBox):
     def __init__(self):
-        super().__init__(foreground=colors["background"], background=colors["cyan"], padding=8, )
+        super().__init__(foreground=colors["fg"], background=colors["bg"], padding=8, )
         self.brightness()
         # Add callbacks to the widget
         self.add_callbacks({'Button1': self.on_left_click, 'Button3': self.on_right_click})
@@ -144,47 +158,63 @@ class BrightnessWidget(TextBox):
         subprocess.run([get_script_path("OpenFlexOS_Brightness.sh"), "-d"])
         self.brightness()
 
-class VolumeWidget(TextBox):
+# class VolumeWidget(TextBox):
+class VolumeWidget(widget.TextBox):
     def __init__(self):
-        super().__init__(foreground=colors["background"], background=colors["green"], padding=8)
-        self.update_interval = 1  # refresh every 1s
-        self.volume()
-        self._schedule_refresh()
+        super().__init__(
+            foreground=colors["fg"],
+            background=colors["color1"],
+            padding=8,
+            **powerlineright,
+        )
 
-        # Mouse callbacks
+        self.update_interval = 1
+
+        self.update()
+        self._schedule()
+
         self.add_callbacks({
-            'Button1': self.on_left_click,
-            'Button2': self.on_middle_click,
-            'Button3': self.on_right_click
+            "Button1": self.vol_up,
+            "Button2": self.vol_mute,
+            "Button3": self.vol_down,
         })
 
-    def _schedule_refresh(self):
-        qtile.call_later(self.update_interval, self._refresh)
+    def _schedule(self):
+        # ✔ Safe scheduling (works only when Qtile is running)
+        if qtile is not None and hasattr(qtile, "call_later"):
+            qtile.call_later(self.update_interval, self._refresh)
 
     def _refresh(self):
-        self.volume()
-        self._schedule_refresh()
+        self.update()
+        self._schedule()
 
-    def volume(self):
-        result = subprocess.run([get_script_path("OpenFlexOS_Volume.sh")], capture_output=True, text=True)
+    def update(self):
+        result = subprocess.run(
+            [get_script_path("OpenFlexOS_Volume.sh")],
+            capture_output=True,
+            text=True
+        )
         self.text = result.stdout.strip()
-        self.draw()
 
-    def on_left_click(self):
+        # ✔ Safe redraw (runs only inside Qtile)
+        if hasattr(self, "bar") and self.bar:
+            self.bar.draw()
+
+    def vol_up(self):
         subprocess.run([get_script_path("OpenFlexOS_Volume.sh"), "-u"])
-        self.volume()
+        self.update()
 
-    def on_middle_click(self):
+    def vol_mute(self):
         subprocess.run([get_script_path("OpenFlexOS_Volume.sh"), "-m"])
-        self.volume()
+        self.update()
 
-    def on_right_click(self):
+    def vol_down(self):
         subprocess.run([get_script_path("OpenFlexOS_Volume.sh"), "-d"])
-        self.volume()
+        self.update()
 
 class nerd_dictation(TextBox):
     def __init__(self):
-        super().__init__(foreground=colors["background"], background=colors["gray"], padding=8, )
+        super().__init__(foreground=colors["fg"], background=colors["bg"], padding=8, )
         self.nerd()
         # Add callbacks to the widget
         self.add_callbacks({'Button1': self.on_left_click,'Button3': self.on_right_click})
@@ -210,64 +240,75 @@ nmcli_widget = widget.GenPollText(
     'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Network.sh") + " -d"),
     'Button3': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Network.sh") + " -r"),
     },
-    foreground=colors["background"],
-    background=colors["green"],
+    foreground=colors["fg"],
+    background=colors["color4"],
     padding=8,
+    **powerlineright,
 )
 
 #############################################################
 ############### Bar #######################################
 #############################################################
-powerline_enabled = True
 
 def init_widgets_list():
     widgets_list = [
     # This Spacer below is to add a few pixels and set it to the same background as the first widget. Maybe help full when using picom with rounded conors
-    widget.Spacer(length=8,background=colors["red"],),
-            widget.TextBox(
-                text="",
-                fontsize=15,
-                padding=8,
-                foreground=colors["background"],
-                background=colors["red"],
-                mouse_callbacks={
-                    'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Applications.sh") + " -d"),
-                    'Button3': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Applications.sh") + " -r"),
-                },
 
-            ),
-            *([powerline_separator_right(colors["red"], colors["green"], powerline_enabled)] if powerline_enabled else []),
-            widget.Clock(
-                foreground=colors["background"],
-                background=colors["green"],
-                format="  %a %d-%m-%Y",
-                padding=8,
-            ),
-            *([powerline_separator_right(colors["green"], colors["yellow"], powerline_enabled)] if powerline_enabled else []),
-            widget.Clock(
-                foreground=colors["background"],
-                format="  %I:%M:%S %p",
-                background=colors["yellow"],
-                padding=8,
-            ),
-             *([powerline_separator_right(colors["yellow"], colors["blue"], powerline_enabled)] if powerline_enabled else []),
-            widget.CPU(
-                format=' {load_percent}%',
-                foreground=colors["background"],
-                background=colors["blue"],
-                padding=8,
-            ),
-             *([powerline_separator_right(colors["blue"], colors["magenta"], powerline_enabled)] if powerline_enabled else []),
-            widget.Memory(
-                foreground=colors["background"],
-                format=' {MemPercent}%',
-                background=colors["magenta"],
-                padding=8,
-            ),
-             *([powerline_separator_right(colors["magenta"], colors["cyan"], powerline_enabled)] if powerline_enabled else []),
+#widget.Spacer(length=8, background=colors["bg"]),
+#
+#widget.TextBox(
+#    text="",
+#    fontsize=15,
+#    padding=8,
+#    foreground=colors["fg"],
+#    background=colors["color3"],
+#    mouse_callbacks={
+#        'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Applications.sh") + " -d"),
+#        'Button3': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Applications.sh") + " -r"),
+#    },
+#    **powerlineleft,
+#),
+
+widget.Clock(
+    foreground=colors["fg"],
+    background=colors["color1"],
+    format="  %a %d-%m-%Y",
+    padding=8,
+    **powerlineleft,
+),
+
+widget.Clock(
+    foreground=colors["fg"],
+    background=colors["color4"],  # changed from bg
+    format="  %I:%M:%S %p",
+    padding=8,
+    **powerlineleft,
+),
+
+widget.CPU(
+    format=' {load_percent}%',
+    foreground=colors["fg"],
+    background=colors["color3"],  # not bg!
+    padding=8,
+    **powerlineleft,
+),
+
+widget.Memory(
+    foreground=colors["fg"],
+    format=' {MemPercent}%',
+    background=colors["color3"],
+    padding=8,
+    **powerlineleft,
+),
+
+
+
+
+
+
             widget.WindowName(
-                foreground=colors["background"],
-                background=colors["cyan"],
+                foreground=colors["fg"],
+                background=colors["color1"],
                 scroll=True,
                 scroll_delay=2,
                 scroll_interval=0.1,
@@ -277,30 +318,41 @@ def init_widgets_list():
                 scroll_fixed_width=True,
                 width=100,
                 padding=8,
+                **powerlineleft,
             ),
-             *([powerline_separator_right(colors["cyan"], colors["transparent"], powerline_enabled)] if powerline_enabled else []),
 
             widget.Spacer(),
             widget.GroupBox(
                 highlight_method='block',
-                highlight_color=colors["foreground"],  # Set this to black or your desired block color
-                this_current_screen_border=colors["blue"],  # Optional: controls text/border color for current screen
-                background=colors["green"],
+                highlight_color=colors["fg"],  # Set this to black or your desired block color
+                this_current_screen_border=colors["color1"],  # Optional: controls text/border color for current screen
+                background=colors["bg"],
                 padding_x=8,  # Horizontal padding around group names
                 padding_y=8,  # Vertical padding (optional)
             ),
-            widget.Spacer(),
-            widget.Systray(),
-            *([powerline_separator_left(colors["blue"], colors["transparent"], powerline_enabled)] if powerline_enabled else []),
+            widget.Spacer(
+                background=colors["bg"],
+                **powerlineright
+
+
+            ),
+            widget.Systray(
+                background=colors["color1"],
+                **powerlineright
+
+
+            ),
+
             widget.CurrentLayout(
                 fmt=" {}",
-                foreground=colors["background"],
-                background=colors["blue"],
+                foreground=colors["fg"],
+                background=colors["color3"],
                 padding=8,
+                **powerlineright
             ),
-            *([powerline_separator_left(colors["green"], colors["blue"], powerline_enabled)] if powerline_enabled else []),
+
             VolumeWidget(),
-            *([powerline_separator_left(colors["red"], colors["green"], powerline_enabled)] if powerline_enabled else []),
+
             widget.GenPollText(
                 name="updates",
                 update_interval=30,
@@ -309,38 +361,36 @@ def init_widgets_list():
                     capture_output=True,
                     text=True
                 ).stdout.strip(),
-                background=colors["red"],
-                foreground=colors["background"],
+                background=colors["color2"],
+                foreground=colors["fg"],
                 padding=8,
                 mouse_callbacks={
                     'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_UpdateCheck.sh") + " -u"),
                     'Button3': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_UpdateCheck.sh") + " -v"),
                 },
-
+                **powerlineright
             ),
-            *([powerline_separator_left(colors["green"], colors["red"], powerline_enabled)] if powerline_enabled else []),
             nmcli_widget,  # (Network Widget) A Script runs and displays an icon depending on if connected to wifi, ethernet, or disconnected
-            *([powerline_separator_left(colors["magenta"], colors["green"], powerline_enabled)] if powerline_enabled else []),
 
-            # BAT Need More Testing to make sure powerline is removed if theres no battery
-            *(
-                [
-                    powerline_separator_left(colors["gray"], colors["cyan"], powerline_enabled),
-                    battery_widget()
-                ] if os.path.exists("/sys/class/power_supply/BAT1") else []
-            ),
+widget.GenPollText(
+    name="Info",
+    update_interval=1,
+    padding=8,
+    func=lambda: subprocess.run(
+        [get_script_path("OpenFlexOS_Info.sh")],
+        capture_output=True,
+        text=True,
+        timeout=2
+    ).stdout.strip(),
+    mouse_callbacks={
+        'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Info.sh") + " -n"),
+        'Button3': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Info.sh") + " -p"),
+        'Button2': copy_info_widget,  # middle-click copy
+    },
+    **powerlineright
+),
 
-
-            # BRIGHT
-        *(
-            [
-                powerline_separator_left(colors["cyan"], colors["gray"], powerline_enabled),
-                BrightnessWidget()
-            ] if os.path.exists("/sys/class/backlight") and os.listdir("/sys/class/backlight") else []
-        ),
-
-
-            widget.GenPollText(
+           widget.GenPollText(
                 name="menu",
                 update_interval=30,
                 func=lambda: subprocess.run(
@@ -348,8 +398,8 @@ def init_widgets_list():
                     capture_output=True,
                     text=True
                 ).stdout.strip(),
-                background=colors["magenta"],
-                foreground=colors["background"],
+                background=colors["color1"],
+                foreground=colors["fg"],
                 padding=8,
                 mouse_callbacks={
                     'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Menu.sh") + " -d"),
@@ -357,9 +407,8 @@ def init_widgets_list():
                 },
 
             ),
-            #*([powerline_separator_left(colors["magenta"], colors["gray"], powerline_enabled)] if powerline_enabled else []),
     #This Spacer below is to add a few pixels and set it to the same background as the last widget. Maybe help full when using picom with rounded conors
-    widget.Spacer(length=8,background=colors["magenta"],),
+    #widget.Spacer(length=8,background=colors["bg"],),
         ]
     return widgets_list
 
@@ -375,9 +424,9 @@ def init_widgets_screen2():
     return widgets_screen2
 
 def init_screens():
-    return [Screen(top=bar.Bar(widgets=init_widgets_screen1(), margin=[20, 18, 0, 18], size=24, background=colors["transparent"])),
-            Screen(top=bar.Bar(widgets=init_widgets_screen2(), margin=[20, 18, 0, 18], size=24, background=colors["transparent"])),
-            Screen(top=bar.Bar(widgets=init_widgets_screen2(), margin=[20, 18, 0, 18], size=24, background=colors["transparent"]))]
+    return [Screen(top=bar.Bar(widgets=init_widgets_screen1(), font="JetBrainsMono Nerd Font", margin=[20, 18, 0, 18], size=24, background=colors["bg"])),
+            Screen(top=bar.Bar(widgets=init_widgets_screen2(), font="JetBrainsMono Nerd Font", margin=[20, 18, 0, 18], size=24, background=colors["bg"])),
+            Screen(top=bar.Bar(widgets=init_widgets_screen2(), font="JetBrainsMono Nerd Font",  margin=[20, 18, 0, 18], size=24, background=colors["bg"]))]
 
 if __name__ in ["config", "__main__"]:
     screens = init_screens()
@@ -680,9 +729,9 @@ keys = [
 ############### Miscellaneous ###############################
 #############################################################
 layouts = [
-    layout.MonadTall(margin=15,border_focus=colors["green"],border_width=8,),
-    layout.MonadWide(margin=15,border_focus=colors["blue"],border_width=8,),
-    layout.RatioTile(margin=15,border_focus=colors["yellow"],border_width=8,),
+    layout.MonadTall(margin=15,border_focus=colors["fg"],border_width=8,),
+    layout.MonadWide(margin=15,border_focus=colors["fg"],border_width=8,),
+    layout.RatioTile(margin=15,border_focus=colors["fg"],border_width=8,),
     layout.TreeTab(),
 ]
 
@@ -786,4 +835,3 @@ def remove_empty_groups_on_switch():
         if g.name not in static_groups and g != current_group:
             if len(g.windows) == 0:
                 qtile.delete_group(g.name)
-

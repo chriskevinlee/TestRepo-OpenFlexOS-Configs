@@ -7,6 +7,7 @@
 # Notes: Add SSH servers to ~/.ssh/servers.txt in the format:
 #        Server Name | ssh user@ip_address
 # ================================================================
+source "$HOME/.config/dmenu_theme.conf"
 
 ssh_icon="󰣀"
 echo "$ssh_icon"
@@ -99,18 +100,44 @@ while getopts "drh" opt 2>/dev/null; do
             install_missing dmenu openssh alacritty ttf-nerd-fonts-symbols
 
             # Define dmenu launcher (as an array)
+           
+
+
+
+
             dmenu_launcher=(
                 dmenu
-                -nb "#1e1e2e"
-                -nf "#cdd6f4"
-                -sb "#89b4fa"
-                -sf "#1e1e2e"
+                -nb "$DMENU_NB"
+                -nf "$DMENU_NF"
+                -sb "$DMENU_SB"
+                -sf "$DMENU_SF"
                 -l 15
                 -i
                 -p "Select SSH Server:"
             )
 
             ssh_menu "${dmenu_launcher[@]}"
+
+
+
+
+
+
+
+
+
+           # dmenu_launcher=(
+           #     dmenu
+           #     -nb "#1e1e2e"
+           #     -nf "#cdd6f4"
+           #     -sb "#89b4fa"
+           #     -sf "#1e1e2e"
+           #     -l 15
+           #     -i
+           #     -p "Select SSH Server:"
+           # )
+
+           # ssh_menu "${dmenu_launcher[@]}"
             ;;
         r)
             # Dependencies for rofi mode

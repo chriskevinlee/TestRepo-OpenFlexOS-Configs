@@ -1,19 +1,47 @@
-* {
-  background-color: #002b36;
-  color: #dc322f;
-  border-color: #268bd2;
-}
+/* Auto-generated GTK3 override */
+/* Current Theme: MyTestTheme */
 
-*:hover,
-*:selected,
-*:active,
-list row:selected,
-list row:selected:hover,
-treeview:selected,
-treeview:selected:focus,
-treeview:selected:hover,
-menuitem:hover,
-menuitem:selected {
-  background-color: #859900;
-  color: #dc322f;
-}
+/* ========================= */
+/*  MAIN BACKGROUND / TEXT   */
+/* ========================= */
+
+/* Main widget background + text */
+@define-color theme_bg_color_breeze        #0D0D0D;
+@define-color theme_base_color_breeze      #0D0D0D;
+@define-color theme_fg_color_breeze        #E6E6E6;
+@define-color theme_text_color_breeze      #E6E6E6;
+
+/* Unfocused window backgrounds */
+@define-color theme_unfocused_bg_color_breeze   #0D0D0D;
+@define-color theme_unfocused_base_color_breeze #0D0D0D;
+@define-color theme_unfocused_fg_color_breeze   #E6E6E6;
+@define-color theme_unfocused_text_color_breeze #E6E6E6;
+
+/* Content / view background (lists, text areas, etc.) */
+@define-color content_view_bg_breeze       #0D0D0D;
+
+/* Titlebar / headerbar backgrounds */
+@define-color theme_titlebar_background_breeze       #0D0D0D;
+@define-color theme_titlebar_background_light_breeze #0D0D0D;
+
+/* Tooltip background + text */
+@define-color tooltip_background_breeze    #0D0D0D;
+@define-color tooltip_text_breeze          #E6E6E6;
+
+/* ========================= */
+/*  HOVER / SELECTION COLORS */
+/* ========================= */
+
+/* View hover decoration */
+@define-color theme_view_hover_decoration_color_breeze    #FF0000;
+
+/* Hovered row / widget background */
+@define-color theme_hovering_selected_bg_color_breeze     #FF0000;
+
+/* Selected row background + text */
+@define-color theme_selected_bg_color_breeze              #FF0000;
+@define-color theme_selected_fg_color_breeze              #ffffff;
+
+/* Button hover / focus */
+@define-color theme_button_decoration_hover_breeze        #FF0000;
+@define-color theme_button_decoration_focus_breeze        #FF0000;

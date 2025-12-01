@@ -13,8 +13,9 @@
 
 MENU_DIR="$HOME/.config/qtile/scripts/menu"
 mkdir -p "$MENU_DIR"
+source "$HOME/.config/dmenu_theme.conf"
 
-echo "󰍜 $USER"
+echo "󰍜  $USER"
 
 # --- Parse command-line arguments ---
 while getopts ":rdh" opt; do
@@ -42,7 +43,7 @@ ROFI_CONFIG="$HOME/.config/qtile/rofi/config.rasi"
 if [[ "$MENU_TOOL" == "rofi" ]]; then
   LAUNCHER=(rofi -config "$ROFI_CONFIG" -dmenu -i -p "Run script:")
 elif [[ "$MENU_TOOL" == "dmenu" ]]; then
-  LAUNCHER=(dmenu -nb "#1e1e2e" -nf "#cdd6f4" -sb "#89b4fa" -sf "#1e1e2e" -l 15 -i -p "Run:")
+  LAUNCHER=(dmenu $DMENU_OPTS -p "Run:")
 fi
 
 # --- Display menu ---

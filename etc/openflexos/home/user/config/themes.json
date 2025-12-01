@@ -1,0 +1,54 @@
+{
+  "current": "MyTestTheme",
+  "themes": {
+    "gruvbox": {
+      "bg": "#282828",
+      "fg": "#ebdbb2",
+      "color1": "#458588",
+      "color2": "#98971a",
+      "color3": "#d65d0e",
+      "color4": "#b16286"
+    },
+    "MyTestTheme": {
+      "bg": "#0D0D0D",    
+      "fg": "#E6E6E6",     
+      "color1": "#FF0000", 
+      "color2": "#B30000", 
+      "color3": "#FF6B6B",
+      "color4": "#1E1E2F"
+    },
+    "nord": {
+      "bg": "#2e3440",
+      "fg": "#d8dee9",
+      "color1": "#81a1c1",
+      "color2": "#a3be8c",
+      "color3": "#d08770",
+      "color4": "#b48ead"
+    },
+    "dracula": {
+      "bg": "#282a36",
+      "fg": "#f8f8f2",
+      "color1": "#6272a4",
+      "color2": "#50fa7b",
+      "color3": "#ffb86c",
+      "color4": "#ff79c6"
+    },
+    "solarized_dark": {
+      "bg": "#002b36",
+      "fg": "#839496",
+      "color1": "#268bd2",
+      "color2": "#859900",
+      "color3": "#cb4b16",
+      "color4": "#6c71c4"
+    },
+    "catppuccin_mocha": {
+      "bg": "#1e1e2e",
+      "fg": "#cdd6f4",
+      "color1": "#89b4fa",
+      "color2": "#a6e3a1",
+      "color3": "#fab387",
+      "color4": "#cba6f7"
+    }
+  }
+}
+

@@ -7,14 +7,18 @@
 # Usage: ./applications.sh
 # Notes:
 # ================================================================
+# Load dmenu theme (generated from JSON)
+source "$HOME/.config/dmenu_theme.conf"
 
 applications_icon=""
 echo $applications_icon
 
 # Detect window manager (same as power script)
-if pgrep -x qtile >/dev/null; then
+if qtile cmd-obj -o cmd -f info >/dev/null 2>&1; then
     WM="qtile"
-elif pgrep -x openbox >/dev/null; then
+elif pgrep -f qtile >/dev/null; then
+    WM="qtile"
+elif pgrep -f openbox >/dev/null; then
     WM="openbox"
 else
     WM="unknown"
@@ -69,7 +73,7 @@ while getopts "drh" main 2>/dev/null; do
       done
 
       # Show only the application names in dmenu
-      app=$(printf '%s\n' "${!app_map[@]}" | sort -u | dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "Launch Application")
+       app=$(printf '%s\n' "${!app_map[@]}" | sort -u | dmenu $DMENU_OPTS -p "Launch Application")
 
       # Launch the selected application if it exists in the map
       if [ -n "$app" ] && [ -n "${app_map[$app]}" ]; then

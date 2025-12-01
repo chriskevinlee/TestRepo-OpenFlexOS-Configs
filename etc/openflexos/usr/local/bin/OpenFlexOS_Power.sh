@@ -4,6 +4,9 @@
 # Supports Rofi or Dmenu launchers
 # ==========================================
 
+# Load dmenu theme colors
+source "$HOME/.config/dmenu_theme.conf"
+
 power_icon="⏻"
 echo "$power_icon"
 
@@ -22,11 +25,8 @@ power() {
     # ------------------------------
     # Load sound configuration (optional)
     # ------------------------------
-    if [[ "$WM" == "qtile" ]]; then
-        source "/home/$USER/.config/qtile/scripts/OpenFlexOS_Sounds.sh"
-    elif [[ "$WM" == "openbox" ]]; then
-        source "/home/$USER/.config/openbox/scripts/OpenFlexOS_Sounds.sh"
-    fi
+    [[ "$WM" == "qtile" ]] && source "$HOME/.config/qtile/scripts/OpenFlexOS_Sounds.sh"
+    [[ "$WM" == "openbox" ]] && source "$HOME/.config/openbox/scripts/OpenFlexOS_Sounds.sh"
 
     # ------------------------------
     # Launcher setup (Rofi or Dmenu)
@@ -34,7 +34,7 @@ power() {
     if [[ "$1" == "rofi" ]]; then
         launcher="rofi -i -config /home/$USER/.config/$WM/rofi/config.rasi -dmenu"
     elif [[ "$1" == "dmenu" ]]; then
-        launcher='dmenu -nb '#1e1e2e' -nf '#cdd6f4' -sb '#89b4fa' -sf '#1e1e2e' -l 15 -i -p "Power"'
+        launcher=(dmenu -nb "$DMENU_NB" -nf "$DMENU_NF" -sb "$DMENU_SB" -sf "$DMENU_SF" -l 15 -i -p "Power")
     else
         echo "Invalid launcher type"
         exit 1
@@ -46,7 +46,14 @@ power() {
     enable_countdown=yes
     countdown=10
 
-    chosen=$(printf " Lock\n󰍃 Logout\n󰜉 Reboot\n Suspend\n Hibernate\n⏻ PowerOff\n" | $launcher -p "Power")
+    # ------------------------------
+    # Display main power menu
+    # ------------------------------
+    if [[ "$1" == "dmenu" ]]; then
+        chosen=$(printf " Lock\n󰍃 Logout\n󰜉 Reboot\n Suspend\n Hibernate\n⏻ PowerOff\n" | "${launcher[@]}")
+    else
+        chosen=$(printf " Lock\n󰍃 Logout\n󰜉 Reboot\n Suspend\n Hibernate\n⏻ PowerOff\n" | $launcher)
+    fi
 
     # ------------------------------
     # Countdown timer function
@@ -91,51 +98,59 @@ power() {
     }
 
     # ------------------------------
-    # Action handling
+    # Confirmation prompt
     # ------------------------------
     confirm() {
-        yes_no=$(printf " no\n yes" | $launcher -p "Would You Like to $1?")
+        if [[ "$1" == "dmenu" ]]; then
+            yes_no=$(printf " no\n yes" | "${launcher[@]}" -p "Confirm $2?")
+        else
+            yes_no=$(printf " no\n yes" | $launcher -p "Confirm $2?")
+        fi
+
         [[ "$yes_no" == *yes* ]] || exit
     }
 
+    # ------------------------------
+    # Handle selected option
+    # ------------------------------
     case "$chosen" in
         " Lock")
-            confirm "Lock"
+            confirm "$1" "Lock"
             if countdown_timer; then
                 [[ "$active_sounds" == yes && -f "${sounds_dir}${lock_sound}" ]] && mpv --no-video "${sounds_dir}${lock_sound}"
                 xscreensaver-command -lock
             fi
             ;;
         "󰍃 Logout")
-            confirm "Logout"
+            confirm "$1" "Logout"
             if countdown_timer; then
                 [[ "$active_sounds" == yes && -f "${sounds_dir}${logout_sound}" ]] && mpv --no-video "${sounds_dir}${logout_sound}"
                 logout_cmd
             fi
             ;;
         "󰜉 Reboot")
-            confirm "Reboot"
+            confirm "$1" "Reboot"
             if countdown_timer; then
                 [[ "$active_sounds" == yes && -f "${sounds_dir}${reboot_sound}" ]] && mpv --no-video "${sounds_dir}${reboot_sound}"
                 systemctl reboot
             fi
             ;;
         " Suspend")
-            confirm "Suspend"
+            confirm "$1" "Suspend"
             if countdown_timer; then
                 [[ "$active_sounds" == yes && -f "${sounds_dir}${suspend_sound}" ]] && mpv --no-video "${sounds_dir}${suspend_sound}"
                 systemctl suspend
             fi
             ;;
         " Hibernate")
-            confirm "Hibernate"
+            confirm "$1" "Hibernate"
             if countdown_timer; then
                 [[ "$active_sounds" == yes && -f "${sounds_dir}${hibernate_sound}" ]] && mpv --no-video "${sounds_dir}${hibernate_sound}"
                 systemctl hibernate
             fi
             ;;
         "⏻ PowerOff")
-            confirm "PowerOff"
+            confirm "$1" "PowerOff"
             if countdown_timer; then
                 [[ "$active_sounds" == yes && -f "${sounds_dir}${poweroff_sound}" ]] && mpv --no-video "${sounds_dir}${poweroff_sound}"
                 systemctl poweroff
@@ -145,46 +160,30 @@ power() {
 }
 
 # ==========================================
-# CLI Argument Handling 
+# CLI Argument Handling
 # ==========================================
 while getopts "drh" main 2>/dev/null; do
     case "${main}" in
         d)
-            package_list=(
-                dmenu
-                ttf-nerd-fonts-symbols
-            )
-
+            package_list=(dmenu ttf-nerd-fonts-symbols)
             for pkg in "${package_list[@]}"; do
                 if ! pacman -Q "$pkg" >/dev/null 2>&1; then
                     script_name=$(basename "$0")
-                    echo "Message from $script_name: $pkg is NOT installed, installing..."
-                    dunstify -u normal "Message from $script_name: $pkg is NOT installed, installing..."
-                    zenity --info --text="Message from $script_name: $pkg is NOT installed, installing..."
-
+                    dunstify -u normal "Installing missing package: $pkg"
                     alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
                 fi
             done
-
             power dmenu
             ;;
         r)
-            package_list=(
-                rofi
-                ttf-nerd-fonts-symbols
-            )
-
+            package_list=(rofi ttf-nerd-fonts-symbols)
             for pkg in "${package_list[@]}"; do
                 if ! pacman -Q "$pkg" >/dev/null 2>&1; then
                     script_name=$(basename "$0")
-                    echo "Message from $script_name: $pkg is NOT installed, installing..."
-                    dunstify -u normal "Message from $script_name: $pkg is NOT installed, installing..."
-                    zenity --info --text="Message from $script_name: $pkg is NOT installed, installing..."
-
+                    dunstify -u normal "Installing missing package: $pkg"
                     alacritty -e bash -c "sudo pacman -S --noconfirm $pkg; read -p 'Press Enter to close...'"
                 fi
             done
-
             power rofi
             ;;
         h)
@@ -200,3 +199,4 @@ while getopts "drh" main 2>/dev/null; do
     esac
     exit 0
 done
+

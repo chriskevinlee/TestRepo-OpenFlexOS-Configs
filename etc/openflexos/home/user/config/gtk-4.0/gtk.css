@@ -1,15 +1,30 @@
-* {
-  background-color: #002b36;
-  color: #dc322f;
-  border-color: #268bd2;
+/* Auto-generated GTK4 theme */
+/* Current Theme: MyTestTheme */
+/* Global */
+window, * {
+    background-color: #0D0D0D;
+    color: #E6E6E6;
 }
 
-*:hover,
-*:selected,
-*:active,
-list row:selected,
-menuitem:hover,
-menuitem:selected {
-  background-color: #859900;
-  color: #dc322f;
+/* Buttons */
+button {
+    background-color: #0D0D0D;
+    color: #E6E6E6;
+    border-radius: 6px;
+}
+
+button:hover {
+    background-color: #FF0000;
+}
+
+/* Entries */
+entry {
+    background-color: #0D0D0D;
+    color: #E6E6E6;
+    border: 1px solid #FF0000;
+}
+
+selection, text selection, entry selection {
+    background-color: #FF0000;
+    color: #E6E6E6;
 }

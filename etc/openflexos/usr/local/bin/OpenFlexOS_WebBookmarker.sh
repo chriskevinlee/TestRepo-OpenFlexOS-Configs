@@ -10,7 +10,7 @@
 #   - Add websites to ~/.config/web_bookmarks/sites.txt
 #   - Format: Website Name | https://example.com
 # ================================================================
-
+source "$HOME/.config/dmenu_theme.conf"
 CONFIG_DIR="$HOME/.config/web_bookmarks"
 SITE_LIST="$CONFIG_DIR/sites.txt"
 
@@ -106,10 +106,10 @@ while getopts "drh" opt 2>/dev/null; do
             # Dmenu launcher as array
             dmenu_launcher=(
                 dmenu
-                -nb "#1e1e2e"
-                -nf "#cdd6f4"
-                -sb "#89b4fa"
-                -sf "#1e1e2e"
+                -nb "$DMENU_NB"
+                -nf "$DMENU_NF"
+                -sb "$DMENU_SB"
+                -sf "$DMENU_SF"
                 -l 15
                 -i
                 -p "Select Website:"

@@ -1,8 +1,8 @@
 * {
-    background-color: #002b36;
-    text-color:       #268bd2;
-    selected-color:   #839496;
-    accent-color:     #dc322f;
+    background-color: #0D0D0D;
+    text-color:       #FF0000;
+    selected-color:   #E6E6E6;
+    accent-color:     #FF6B6B;
 }
 
 configuration {
@@ -22,12 +22,12 @@ window {
 
 inputbar {
     border: 0px 0px 5px 0px;
-    border-color: #98971a;
+    border-color: #B30000;
     padding: 10px;
 }
 
 prompt {
-    color: #d79921;
+    color: #FF6B6B;
 }
 
 listview {
@@ -60,14 +60,11 @@ element-text selected {
 
 entry {
     placeholder: "Search";
-    color: #b16286;
+    color: #1E1E2F;
 }
 
 error-message {
     expand: true;
     padding: 1em;
-    text-color: #fb4934;
+    text-color: #FF6B6B;
 }
-
-
-

@@ -4,7 +4,7 @@
 # Author: Chris Lee, ChatGPT
 # Dependencies: rofi, dmenu, networkmanager, dunstify, NerdFontsSymbolsOnly
 # ================================================================
-
+source "$HOME/.config/dmenu_theme.conf"
 wifi_icon=""
 ethernet_icon=""
 disconnected_icon=""
@@ -12,13 +12,16 @@ disconnected_icon=""
 # ---------------------------------------------------------------
 # Detect window manager
 # ---------------------------------------------------------------
-if pgrep -x qtile >/dev/null; then
+if qtile cmd-obj -o cmd -f info >/dev/null 2>&1; then
     WM="qtile"
-elif pgrep -x openbox >/dev/null; then
+elif pgrep -f qtile >/dev/null; then
+    WM="qtile"
+elif pgrep -f openbox >/dev/null; then
     WM="openbox"
 else
     WM="unknown"
 fi
+
 
 # ---------------------------------------------------------------
 # Rofi launcher helper
@@ -180,19 +183,20 @@ while getopts "rdh" opt 2>/dev/null; do
             ;;
         d)
             install_missing dmenu networkmanager dunst ttf-nerd-fonts-symbols
-
             dmenu_launcher=(
-                dmenu
-                -nb "#1e1e2e"
-                -nf "#cdd6f4"
-                -sb "#89b4fa"
-                -sf "#1e1e2e"
-                -l 15
-                -i
-            )
+    dmenu
+    -nb "$DMENU_NB"
+    -nf "$DMENU_NF"
+    -sb "$DMENU_SB"
+    -sf "$DMENU_SF"
+    -l 15
+    -i
+)
 
-            wifi_network "${dmenu_launcher[@]}"
-            ;;
+wifi_network "${dmenu_launcher[@]}"
+
+	    
+	    ;;
         h)
             echo "Wi-Fi Manager Script"
             echo "Usage: $(basename "$0") [-r | -d | -h]"
