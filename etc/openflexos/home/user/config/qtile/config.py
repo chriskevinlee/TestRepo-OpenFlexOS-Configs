@@ -438,9 +438,6 @@ if __name__ in ["config", "__main__"]:
 ############### Variables ###################################
 #############################################################
 
-# Alternative modifier key (Alt key)
-alt = "mod1"
-
 # Primary modifier key (Super/Windows key)
 mod = "mod4"
 
@@ -526,10 +523,10 @@ keys = [
     Key([mod], "m", lazy.layout.shrink()),
 
     # Grow/shrink/resize in floating mode
-    Key([alt], "l", resize_floating_window(width=10), desc="Increase width by 10"),
-    Key([alt], "h", resize_floating_window(width=-10), desc="Decrease width by 10"),
-    Key([alt], "j", resize_floating_window(height=10), desc="Increase height by 10"),
-    Key([alt], "k", resize_floating_window(height=-10), desc="Decrease height by 10"),
+    Key([mod, "shift"], "l", resize_floating_window(width=10), desc="Increase width by 10"),
+    Key([mod, "shift"], "h", resize_floating_window(width=-10), desc="Decrease width by 10"),
+    Key([mod, "shift"], "j", resize_floating_window(height=10), desc="Increase height by 10"),
+    Key([mod, "shift"], "k", resize_floating_window(height=-10), desc="Decrease height by 10"),
 
     # Toggle between split and unsplit sides of stack.
     # Split = all windows displayed
@@ -555,17 +552,18 @@ keys = [
     Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
 
     # Start of My Config: setting my own keys
-    Key([alt], "c", lazy.spawn("caja"), desc="Launch Caja"),
-    Key([alt], "f", lazy.spawn("firefox"), desc="Launch Firefox"),
-    Key([alt], "b", lazy.spawn("brave --password-store=basic"), desc="Launch Brave"),
-    Key([mod, alt], "b", lazy.spawn([get_script_path("OpenFlexOS_NerdDictation.sh "), "start"]), desc="begin/start nerd dictation"),
-    Key([mod, alt], "e", lazy.spawn([get_script_path("OpenFlexOS_NerdDictation.sh "), "stop"]), desc="end/stop nerd dictation"),
+    Key([mod, "shift"], "c", lazy.spawn("caja"), desc="Launch Caja"),
+    Key([mod, "shift"], "f", lazy.spawn("firefox"), desc="Launch Firefox"),
+    Key([mod, "shift"], "b", lazy.spawn("brave --password-store=basic"), desc="Launch Brave"),
     Key([], "XF86AudioRaiseVolume", lazy.spawn(get_script_path("OpenFlexOS_Volume.sh") + " -u"), desc="Increase volume"),
     Key([], "XF86AudioLowerVolume", lazy.spawn(get_script_path("OpenFlexOS_Volume.sh") + " -d"), desc="Decrease volume"),
     Key([], "XF86AudioMute", lazy.spawn(get_script_path("OpenFlexOS_Volume.sh") + " -m"), desc="Mute/Unmute"),
 
+    Key([mod, "shift"], "x", lazy.spawn(get_script_path("OpenFlexOS_Info.sh") + " -n"), desc="Increase volume"),
+    Key([mod, "shift"], "z", lazy.spawn(get_script_path("OpenFlexOS_Info.sh") + " -p"), desc="Increase volume"),
+
     # Key Chord for Applications Menu
-    KeyChord([alt], "a", [
+    KeyChord([mod, "shift"], "a", [
         Key([], "d",
             lazy.spawn(get_script_path("OpenFlexOS_Applications.sh") + " -d"),
             lazy.ungrab_chord(),
@@ -579,7 +577,7 @@ keys = [
     ], mode="Launcher"),
 
     # Key Chord for Power Menu
-    KeyChord([alt], "p", [
+    KeyChord([mod, "shift"], "p", [
         Key([], "d",
             lazy.spawn(get_script_path("OpenFlexOS_Power.sh") + " -d"),
             lazy.ungrab_chord(),
@@ -593,7 +591,7 @@ keys = [
     ], mode="Power"),
 
     # Key Chord for SSH Menu
-    KeyChord([alt], "s", [
+    KeyChord([mod, "shift"], "s", [
         Key([], "d",
             lazy.spawn(get_script_path("OpenFlexOS_SSH.sh") + " -d"),
             lazy.ungrab_chord(),
@@ -608,7 +606,7 @@ keys = [
 
 
     # Key Chord for Network Menu
-    KeyChord([alt], "m", [
+    KeyChord([mod, "shift"], "m", [
         Key([], "d",
             lazy.spawn(get_script_path("OpenFlexOS_Menu.sh") + " -d"),
             lazy.ungrab_chord(),
@@ -622,7 +620,7 @@ keys = [
     ], mode="Launcher"),
 
     # Key Chord for Network Menu
-    KeyChord([alt], "n", [
+    KeyChord([mod, "shift"], "n", [
         Key([], "d",
             lazy.spawn(get_script_path("OpenFlexOS_Network.sh") + " -d"),
             lazy.ungrab_chord(),
@@ -636,7 +634,7 @@ keys = [
     ], mode="Launcher"),
 
     # Key Chord for Network Menu
-    KeyChord([alt], "n", [
+    KeyChord([mod, "shift"], "n", [
         Key([], "d",
             lazy.spawn(get_script_path("OpenFlexOS_Network.sh") + " -d"),
             lazy.ungrab_chord(),
@@ -650,7 +648,7 @@ keys = [
     ], mode="Launcher"),
 
     # Key Chord for Updates
-    KeyChord([alt], "u", [
+    KeyChord([mod, "shift"], "u", [
         Key([], "u",
             lazy.spawn(get_script_path("OpenFlexOS_UpdateCheck.sh") + " -u"),
             lazy.ungrab_chord(),
@@ -664,7 +662,7 @@ keys = [
     ], mode="Launcher"),
 
     # Key Chord for Flameshot(screenshot)
-    KeyChord([alt], "i", [
+    KeyChord([mod, "shift"], "i", [
         Key([], "g",
             lazy.spawn("flameshot gui"),
             lazy.ungrab_chord(),
@@ -682,7 +680,7 @@ keys = [
         ),
     ], mode="Screenshot"),
 
-    KeyChord([alt], "e", [
+    KeyChord([mod, "shift"], "e", [
         Key([], "r",
             lazy.spawn("/etc/openflexos/usr/local/bin/OpenFlexOS_WebBookmarker.sh -r"),
             lazy.ungrab_chord(),
@@ -695,7 +693,7 @@ keys = [
         ),
     ], mode="WebBookmaker"),
 
-    KeyChord([alt], "w", [
+    KeyChord([mod, "shift"], "w", [
         Key([], "s",
             lazy.spawn("/etc/openflexos/usr/local/bin/OpenFlexOS_WallpaperChanger.sh -s"),
             lazy.ungrab_chord(),
