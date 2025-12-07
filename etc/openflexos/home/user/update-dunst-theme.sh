@@ -85,5 +85,5 @@ cat > "$DUNST_FILE" <<EOF
 EOF
 
 echo "✅ Dunst theme updated using theme '$CURRENT_THEME' → $DUNST_FILE"
-echo "🔄 Restart dunst with: pkill dunst && dunst &"
+pkill dunst && dunst &
 
