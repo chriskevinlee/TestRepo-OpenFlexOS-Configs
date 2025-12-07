@@ -9,6 +9,7 @@
 # Notes:
 #   - Add websites to ~/.config/web_bookmarks/sites.txt
 #   - Format: Website Name | https://example.com
+#   - To set Default Browser run xdg-settings set default-web-browser <desktop-file> from terminal
 # ================================================================
 source "$HOME/.config/dmenu_theme.conf"
 CONFIG_DIR="$HOME/.config/web_bookmarks"
