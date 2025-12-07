@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ -L /home/$USER/.config/gtk-4.0/gtk.css ]; then
+    rm /home/$USER/.config/gtk-4.0/gtk.css
+    cp  /etc/openflexos/home/user/config/gtk-4.0/gtk.css /home/$USER/.config/gtk-4.0/gtk.css
+fi
+
 THEMES_FILE="$HOME/.config/themes.json"
 GTK4_FILE="$HOME/.config/gtk-4.0/gtk.css"
 

@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ -L "/home/$USER/.gtkrc-2.0" ]; then
+    rm "/home/$USER/.gtkrc-2.0"
+    cp  "/etc/openflexos/home/user/.gtkrc-2.0" "/home/$USER/.gtkrc-2.0"
+fi
+
 THEMES_FILE="$HOME/.config/themes.json"
 GTK2_FILE="$HOME/.gtkrc-2.0"
 

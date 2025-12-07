@@ -3,6 +3,12 @@
 # Creates: ~/.config/gtk-3.0/gtk.css and gtk-dark.css
 # Works with Viola-Dark-GTK as the base theme.
 
+if [ -L /home/$USER/.config/gtk-3.0/gtk.css ]; then
+    rm /home/$USER/.config/gtk-3.0/gtk.css
+    cp  /etc/openflexos/home/user/config/gtk-3.0/gtk.css /home/$USER/.config/gtk-3.0/gtk.css
+fi
+
+
 THEMES_FILE="$HOME/.config/themes.json"
 GTK_DIR="$HOME/.config/gtk-3.0"
 GTK_CSS="$GTK_DIR/gtk.css"

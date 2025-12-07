@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+if [ -L /home/$USER/.config/ohmyposh/base.toml ]; then
+    rm /home/$USER/.config/ohmyposh/base.toml
+    cp  /etc/openflexos/home/user/config/ohmyposh/base.toml /home/$USER/.config/ohmyposh/base.toml 
+fi
+
 THEME_FILE="$HOME/.config/themes.json"
 TOML_FILE="$HOME/.config/ohmyposh/base.toml"
 

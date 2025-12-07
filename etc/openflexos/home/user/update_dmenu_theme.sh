@@ -2,6 +2,11 @@
 # Regenerate dmenu theme file from the master theme JSON
 # Current Theme: $THEME
 
+if [ -L /home/$USER/.config/dmenu_theme.conf ]; then
+    rm /home/$USER/.config/dmenu_theme.conf
+    cp  /etc/openflexos/home/user/config/dmenu_theme.conf /home/$USER/.config/dmenu_theme.conf
+fi
+
 THEME_FILE="$HOME/.config/themes.json"
 OUTPUT_FILE="$HOME/.config/dmenu_theme.conf"
 

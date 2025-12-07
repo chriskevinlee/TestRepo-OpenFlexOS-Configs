@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ -L /home/$USER/.config/dunst/dunstrc ]; then
+    rm /home/$USER/.config/dunst/dunstrc 
+    cp  /etc/openflexos/home/user/config/dunst/dunstrc /home/$USER/.config/dunst/dunstrc
+fi
+
 # Path to your themes.json file
 THEMES_FILE="$HOME/.config/themes.json"
 

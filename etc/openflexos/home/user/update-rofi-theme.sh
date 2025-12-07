@@ -2,6 +2,11 @@
 # Generate a Rofi theme based on ~/.config/openflexos/themes.json
 # Current Theme: $THEME
 
+if [ -L /home/$USER/.config/qtile/rofi/theme.rasi ]; then
+    rm /home/$USER/.config/qtile/rofi/theme.rasi
+    cp  /etc/openflexos/home/user/config/qtile/rofi/theme.rasi /home/$USER/.config/qtile/rofi/theme.rasi
+fi
+
 THEME_FILE="$HOME/.config/themes.json"
 ROFI_FILE="$HOME/.config/qtile/rofi/theme.rasi"
 

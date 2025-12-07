@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Reads the current theme from themes.json and generates alacritty.toml
 
+if [ -L /home/$USER/.config/alacritty/alacritty.toml ]; then
+    rm /home/$USER/.config/alacritty/alacritty.toml
+    cp  /etc/openflexos/home/user/config/alacritty/alacritty.toml /home/$USER/.config/alacritty/alacritty.toml
+fi
+
 # Path to your themes.json file
 THEMES_FILE="$HOME/.config/themes.json"
 
