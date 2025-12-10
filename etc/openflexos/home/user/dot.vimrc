@@ -20,3 +20,4 @@ set ignorecase
 " Automatically indent new lines
 set autoindent
 
+set showmode
