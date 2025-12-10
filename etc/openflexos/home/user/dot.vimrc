@@ -19,7 +19,18 @@ set ignorecase
 
 " Automatically indent new lines
 set autoindent
+set smartindent
+filetype plugin indent on
 
-set showmode
 
-set foldmethod=indent
+set statusline=%f\ [%{ModeName()}]\ %l:%c
+function! ModeName()
+  let l:m = mode()
+  return l:m ==# 'n'  ? 'NORMAL'  :
+        \ l:m ==# 'i'  ? 'INSERT'  :
+        \ l:m ==# 'v'  ? 'VISUAL'  :
+        \ l:m ==# 'V'  ? 'V-LINE'  :
+        \ l:m ==# "\<C-v>" ? 'V-BLOCK' :
+        \ l:m ==# 'R'  ? 'REPLACE' :
+        \ 'OTHER'
+endfunction
