@@ -21,3 +21,5 @@ set ignorecase
 set autoindent
 
 set showmode
+
+set foldmethod=indent
