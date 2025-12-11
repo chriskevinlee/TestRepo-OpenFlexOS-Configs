@@ -9,6 +9,7 @@ bash update-dunst-theme.sh
 bash update-gtk2-theme.sh
 bash update-gtk3-theme.sh
 bash update-gtk4-theme.sh
+bash update_picom_theme.sh
 
 SOCKET="$HOME/.cache/qtile/qtilesocket.:0"
 
