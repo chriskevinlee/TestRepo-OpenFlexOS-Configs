@@ -252,10 +252,10 @@ nmcli_widget = widget.GenPollText(
 
 def init_widgets_list():
     widgets_list = [
-    # This Spacer below is to add a few pixels and set it to the same background as the first widget. Maybe help full when using picom with rounded conors
+# This Spacer below is to add a few pixels and set it to the same background as the first widget. Maybe help full when using picom with rounded conors
 
-#widget.Spacer(length=8, background=colors["bg"]),
-#
+widget.Spacer(length=8, background=colors["bg"]),
+
 #widget.TextBox(
 #    text="",
 #    fontsize=15,
@@ -288,7 +288,7 @@ widget.Clock(
 widget.CPU(
     format=' {load_percent}%',
     foreground=colors["fg"],
-    background=colors["color3"],  # not bg!
+    background=colors["color1"],  # not bg!
     padding=8,
     **powerlineleft,
 ),
@@ -301,76 +301,71 @@ widget.Memory(
     **powerlineleft,
 ),
 
+widget.WindowName(
+    foreground=colors["fg"],
+    background=colors["color1"],
+    scroll=True,
+    scroll_delay=2,
+    scroll_interval=0.1,
+    scroll_step=2,
+    scroll_repeat=True,
+    scroll_clear=False,
+    scroll_fixed_width=True,
+    width=100,
+    padding=8,
+    **powerlineleft,
+),
+
+widget.Spacer(),
+widget.GroupBox(
+    highlight_method='block',
+    highlight_color=colors["fg"],  # Set this to black or your desired block color
+    this_current_screen_border=colors["color1"],  # Optional: controls text/border color for current screen
+    background=colors["bg"],
+    padding_x=8,  # Horizontal padding around group names
+    padding_y=8,  # Vertical padding (optional)
+),
+widget.Spacer(
+    background=colors["bg"],
+    **powerlineright
 
 
+),
+widget.Systray(
+    background=colors["color1"],
+    **powerlineright
 
 
+),
 
-            widget.WindowName(
-                foreground=colors["fg"],
-                background=colors["color1"],
-                scroll=True,
-                scroll_delay=2,
-                scroll_interval=0.1,
-                scroll_step=2,
-                scroll_repeat=True,
-                scroll_clear=False,
-                scroll_fixed_width=True,
-                width=100,
-                padding=8,
-                **powerlineleft,
-            ),
+widget.CurrentLayout(
+    fmt=" {}",
+    foreground=colors["fg"],
+    background=colors["color3"],
+    padding=8,
+    **powerlineright
+),
 
-            widget.Spacer(),
-            widget.GroupBox(
-                highlight_method='block',
-                highlight_color=colors["fg"],  # Set this to black or your desired block color
-                this_current_screen_border=colors["color1"],  # Optional: controls text/border color for current screen
-                background=colors["bg"],
-                padding_x=8,  # Horizontal padding around group names
-                padding_y=8,  # Vertical padding (optional)
-            ),
-            widget.Spacer(
-                background=colors["bg"],
-                **powerlineright
+VolumeWidget(),
 
-
-            ),
-            widget.Systray(
-                background=colors["color1"],
-                **powerlineright
-
-
-            ),
-
-            widget.CurrentLayout(
-                fmt=" {}",
-                foreground=colors["fg"],
-                background=colors["color3"],
-                padding=8,
-                **powerlineright
-            ),
-
-            VolumeWidget(),
-
-            widget.GenPollText(
-                name="updates",
-                update_interval=30,
-                func=lambda: subprocess.run(
-                    [get_script_path("OpenFlexOS_UpdateCheck.sh")],
-                    capture_output=True,
-                    text=True
-                ).stdout.strip(),
-                background=colors["color2"],
-                foreground=colors["fg"],
-                padding=8,
-                mouse_callbacks={
-                    'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_UpdateCheck.sh") + " -u"),
-                    'Button3': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_UpdateCheck.sh") + " -v"),
-                },
-                **powerlineright
-            ),
-            nmcli_widget,  # (Network Widget) A Script runs and displays an icon depending on if connected to wifi, ethernet, or disconnected
+widget.GenPollText(
+    name="updates",
+    update_interval=30,
+    func=lambda: subprocess.run(
+        [get_script_path("OpenFlexOS_UpdateCheck.sh")],
+        capture_output=True,
+        text=True
+    ).stdout.strip(),
+    background=colors["color2"],
+    foreground=colors["fg"],
+    padding=8,
+    mouse_callbacks={
+        'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_UpdateCheck.sh") + " -u"),
+        'Button3': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_UpdateCheck.sh") + " -v"),
+    },
+    **powerlineright
+),
+nmcli_widget,  # (Network Widget) A Script runs and displays an icon depending on if connected to wifi, ethernet, or disconnected
 
 widget.GenPollText(
     name="Info",
@@ -390,25 +385,39 @@ widget.GenPollText(
     **powerlineright
 ),
 
-           widget.GenPollText(
-                name="menu",
-                update_interval=30,
-                func=lambda: subprocess.run(
-                    [get_script_path("OpenFlexOS_Menu.sh")],
-                    capture_output=True,
-                    text=True
-                ).stdout.strip(),
-                background=colors["color1"],
-                foreground=colors["fg"],
-                padding=8,
-                mouse_callbacks={
-                    'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Menu.sh") + " -d"),
-                    'Button3': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Menu.sh") + " -r"),
-                },
+widget.GenPollText(
+     name="menu",
+     update_interval=30,
+     func=lambda: subprocess.run(
+         [get_script_path("OpenFlexOS_Menu.sh")],
+         capture_output=True,
+         text=True
+     ).stdout.strip(),
+     background=colors["color1"],
+     foreground=colors["fg"],
+     padding=8,
+     mouse_callbacks={
+         'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Menu.sh") + " -d"),
+         'Button3': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Menu.sh") + " -r"),
+     },
+#      **powerlineright
+ ),
 
-            ),
-    #This Spacer below is to add a few pixels and set it to the same background as the last widget. Maybe help full when using picom with rounded conors
-    #widget.Spacer(length=8,background=colors["bg"],),
+#widget.TextBox(
+#    text="⏻",
+#    fontsize=15,
+#    padding=8,
+#    foreground=colors["fg"],
+#    background=colors["color3"],
+#    mouse_callbacks={
+#        'Button1': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Power.sh") + " -d"),
+#        'Button3': lambda: qtile.cmd_spawn(get_script_path("OpenFlexOS_Power.sh") + " -r"),
+#    },
+##    **powerlineright,
+#),
+#
+##This Spacer below is to add a few pixels and set it to the same background as the last widget. Maybe help full when using picom with rounded conors
+#widget.Spacer(length=8,background=colors["color3"],),
         ]
     return widgets_list
 

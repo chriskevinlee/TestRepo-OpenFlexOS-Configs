@@ -1,22 +1,22 @@
 "" = "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json"
 version = 3
-# Current Theme: MyTestTheme
+# Current Theme: gruvbox
 
 [[blocks]]
 alignment = "left"
 type = "prompt"
 
   [[blocks.segments]]
-  background = "#0D0D0D"
-  foreground = "#E6E6E6"
+  background = "#282828"
+  foreground = "#ebdbb2"
   leading_diamond = "╭─"
   style = "diamond"
   template = "{{ .UserName }}@{{ .HostName }}"
   type = "shell"
 
   [[blocks.segments]]
-  background = "#FF6B6B"
-  foreground = "#E6E6E6"
+  background = "#d65d0e"
+  foreground = "#ebdbb2"
   powerline_symbol = ""
   style = "powerline"
   template = "{{ .Path }} "
@@ -27,8 +27,8 @@ type = "prompt"
     style = "full"
 
   [[blocks.segments]]
-  background = "#B30000"
-  foreground = "#E6E6E6"
+  background = "#98971a"
+  foreground = "#ebdbb2"
   powerline_symbol = ""
   style = "powerline"
   template = "{{ .UpstreamIcon }}{{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}"
@@ -39,8 +39,8 @@ type = "prompt"
     fetch_upstream_icon = true
 
   [[blocks.segments]]
-  background = "#FF0000"
-  foreground = "#E6E6E6"
+  background = "#458588"
+  foreground = "#ebdbb2"
   style = "diamond"
   template = "  {{ .FormattedMs }}⠀"
   trailing_diamond = ""
@@ -51,8 +51,8 @@ alignment = "right"
 type = "prompt"
 
   [[blocks.segments]]
-  background = "#1E1E2F"
-  foreground = "#E6E6E6"
+  background = "#b16286"
+  foreground = "#ebdbb2"
   leading_diamond = ""
   style = "diamond"
   template = " {{ if .WSL }}WSL at {{ end }}{{.Icon}} "
@@ -65,13 +65,13 @@ type = "prompt"
   [[blocks.segments]]
   type = "text"
   style = "plain"
-  background = "#0D0D0D"
-  foreground = "#E6E6E6"
+  background = "#282828"
+  foreground = "#ebdbb2"
   template = "On"
 
   [[blocks.segments]]
-  background = "#FF6B6B"
-  foreground = "#E6E6E6"
+  background = "#d65d0e"
+  foreground = "#ebdbb2"
   style = "diamond"
   template = " {{ .Name }} "
   type = "shell"
@@ -82,13 +82,13 @@ newline = true
 type = "prompt"
 
   [[blocks.segments]]
-  foreground = "#1E1E2F"
+  foreground = "#b16286"
   style = "plain"
   template = "╰─"
   type = "text"
 
   [[blocks.segments]]
-  foreground = "#FF0000"
+  foreground = "#458588"
   style = "plain"
   template = " "
   type = "status"
