@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 STATE_FILE="$HOME/.ip_script_index"
+ICON=" "
 
 functions=(
   get_router_ip
@@ -10,18 +11,18 @@ functions=(
   get_uptime
 )
 get_router_ip() {
-    echo "Router IP: $(ip route get 1.1.1.1 | awk '/via/ {print $3; exit}')"
+    echo "$ICON Router IP: $(ip route get 1.1.1.1 | awk '/via/ {print $3; exit}')"
 }
 get_local_ip() {
-    echo "Local IP: $(ip route get 1.1.1.1 | awk '/via/ {print $7; exit}')"
+    echo "$ICON Local IP: $(ip route get 1.1.1.1 | awk '/via/ {print $7; exit}')"
 }
 
 get_public_ip() {
-    echo "Public IP: $(curl -4s icanhazip.com)"
+    echo "$ICON Public IP: $(curl -4s icanhazip.com)"
 }
 
 get_hostname() {
-    echo "Hostname: $(cat /etc/hostname)"
+    echo "$ICON Hostname: $(cat /etc/hostname)"
 }
 
 get_uptime(){
@@ -35,13 +36,13 @@ get_uptime(){
 	
 	if (( uptime_seconds < 3600 )); then
 	    # Under 1 hour → show minutes only
-	    echo "Uptime: ${minutes}m"
+	    echo "$ICON Uptime: ${minutes}m"
 	elif (( uptime_seconds < 86400 )); then
 	    # Under 1 day → show hours:minutes
-	    echo "Uptime: ${hours}h:${minutes}m"
+	    echo "$ICON Uptime: ${hours}h:${minutes}m"
 	else
 	    # 1 day+ → show days:hours:minutes
-	    echo "Uptime: ${days}d:${hours}h:${minutes}m"
+	    echo "$ICON Uptime: ${days}d:${hours}h:${minutes}m"
 	fi
 }
 

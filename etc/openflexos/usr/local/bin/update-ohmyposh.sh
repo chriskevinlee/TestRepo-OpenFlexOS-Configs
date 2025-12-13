@@ -29,7 +29,7 @@ alignment = "left"
 type = "prompt"
 
   [[blocks.segments]]
-  background = "$bg"
+  background = "$color1"
   foreground = "$fg"
   leading_diamond = "╭─"
   style = "diamond"
@@ -87,7 +87,7 @@ type = "prompt"
   [[blocks.segments]]
   type = "text"
   style = "plain"
-  background = "$bg"
+  background = "$color2"
   foreground = "$fg"
   template = "On"
 
