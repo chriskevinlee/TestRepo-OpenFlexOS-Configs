@@ -368,6 +368,8 @@ widget.GenPollText(
     name="Info",
     update_interval=1,
     padding=8,
+    foreground=colors["fg"],
+    background=colors["color3"],
     func=lambda: subprocess.run(
         [get_script_path("OpenFlexOS_Info.sh")],
         capture_output=True,
