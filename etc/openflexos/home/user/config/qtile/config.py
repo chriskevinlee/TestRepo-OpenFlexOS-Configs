@@ -252,9 +252,6 @@ nmcli_widget = widget.GenPollText(
 
 def init_widgets_list():
     widgets_list = [
-# This Spacer below is to add a few pixels and set it to the same background as the first widget. Maybe help full when using picom with rounded conors
-
-widget.Spacer(length=8, background=colors["bg"]),
 
 #widget.TextBox(
 #    text="",
