@@ -7,7 +7,7 @@ alignment = "left"
 type = "prompt"
 
   [[blocks.segments]]
-  background = "#282828"
+  background = "#458588"
   foreground = "#ebdbb2"
   leading_diamond = "╭─"
   style = "diamond"
@@ -65,7 +65,7 @@ type = "prompt"
   [[blocks.segments]]
   type = "text"
   style = "plain"
-  background = "#282828"
+  background = "#98971a"
   foreground = "#ebdbb2"
   template = "On"
 
