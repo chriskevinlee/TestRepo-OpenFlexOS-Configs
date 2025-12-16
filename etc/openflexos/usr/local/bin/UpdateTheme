@@ -1,18 +1,23 @@
 #!/usr/bin/env bash
 set -e
 
+THEMES_FILE="$HOME/.config/themes.json"
+SOCKET="$HOME/.cache/qtile/qtilesocket.:0"
+
+# Terminal & editor (Qtile usually sets TERMINAL)
+TERMINAL="${TERMINAL:-alacritty}"
+EDITOR_CMD="${EDITOR:-vim}"
+
 # Default theme selection method
 theme_selector="none"
 
+# ---------------------------
 # Parse command-line options
+# ---------------------------
 while getopts "dr" opt; do
     case $opt in
-        d)
-            theme_selector="dmenu"
-            ;;
-        r)
-            theme_selector="rofi"
-            ;;
+        d) theme_selector="dmenu" ;;
+        r) theme_selector="rofi" ;;
         *)
             echo "Usage: $0 [-d] [-r]"
             exit 1
@@ -20,66 +25,96 @@ while getopts "dr" opt; do
     esac
 done
 
-# Define theme options (keys)
-themes=($(jq -r '.themes | keys[]' ~/.config/themes.json))
+if [[ "$theme_selector" == "none" ]]; then
+    echo "Error: You must choose -d (dmenu) or -r (rofi)"
+    exit 1
+fi
 
-# Function to select theme using dmenu
-select_theme_dmenu() {
-    selected_theme=$(echo "${themes[@]}" | tr ' ' '\n' | dmenu -p "Select Theme:" -l 10)
-    if [[ -n "$selected_theme" ]]; then
-        echo "Selected theme: $selected_theme"
-        # Update the current theme in the themes.json file
-        jq --arg theme "$selected_theme" '.current = $theme' ~/.config/themes.json > ~/.config/themes.json.tmp && mv ~/.config/themes.json.tmp ~/.config/themes.json
+# ---------------------------
+# Load themes dynamically
+# ---------------------------
+themes=($(jq -r '.themes | keys[]' "$THEMES_FILE" | sort))
+
+# ---------------------------
+# Menu helpers
+# ---------------------------
+menu() {
+    local prompt="$1"
+    shift
+    printf "%s\n" "$@" | case "$theme_selector" in
+        dmenu) dmenu -p "$prompt" -l 10 ;;
+        rofi)  rofi -dmenu -p "$prompt" -i ;;
+    esac
+}
+
+# ---------------------------
+# Actions
+# ---------------------------
+choose_theme() {
+    local selected
+    selected=$(menu "Select Theme:" "${themes[@]}")
+
+    if [[ -n "$selected" ]]; then
+        jq --arg theme "$selected" '.current = $theme' \
+            "$THEMES_FILE" > "$THEMES_FILE.tmp" && mv "$THEMES_FILE.tmp" "$THEMES_FILE"
+        apply_theme
     fi
 }
 
-# Function to select theme using rofi
-select_theme_rofi() {
-    selected_theme=$(echo "${themes[@]}" | tr ' ' '\n' | rofi -dmenu -p "Select Theme:" -i -theme-str 'listview { lines: 10; }')
-    if [[ -n "$selected_theme" ]]; then
-        echo "Selected theme: $selected_theme"
-        # Update the current theme in the themes.json file
-        jq --arg theme "$selected_theme" '.current = $theme' ~/.config/themes.json > ~/.config/themes.json.tmp && mv ~/.config/themes.json.tmp ~/.config/themes.json
+edit_themes() {
+    if [[ -t 1 ]]; then
+        "$EDITOR_CMD" "$THEMES_FILE"
+    else
+        "$TERMINAL" -e "$EDITOR_CMD" "$THEMES_FILE" &
     fi
 }
 
-# Select theme based on the chosen method
-case "$theme_selector" in
-    "dmenu")
-        select_theme_dmenu
-        ;;
-    "rofi")
-        select_theme_rofi
-        ;;
-    "none")
-        echo "No theme selection method chosen. Continuing with theme update."
-        ;;
+apply_theme() {
+    local current
+    current=$(jq -r '.current' "$THEMES_FILE")
+    echo "Applying theme: $current"
+
+    bash update-ohmyposh.sh
+    bash update-rofi-theme.sh
+    bash update_dmenu_theme.sh
+    bash update-alacritty-theme.sh
+    bash update-dunst-theme.sh
+    bash update-gtk2-theme.sh
+    bash update-gtk3-theme.sh
+    bash update-gtk4-theme.sh
+    bash update_picom_theme.sh
+
+    restart_qtile
+}
+
+restart_qtile() {
+    echo "Restarting Qtile..."
+    qtile cmd-obj -o cmd -f restart || true
+
+    for i in {1..50}; do
+        if qtile cmd-obj -s "$SOCKET" -o cmd -f info >/dev/null 2>&1; then
+            echo "Qtile restarted successfully."
+            return
+        fi
+        sleep 0.2
+    done
+
+    echo "⚠️  Qtile restart timed out or IPC not ready."
+}
+
+# ---------------------------
+# Main menu
+# ---------------------------
+action=$(menu "Theme Manager:" \
+    "Choose a theme" \
+    "Edit themes.json" \
+    "Apply theme"
+)
+
+case "$action" in
+    "Choose a theme")   choose_theme ;;
+    "Edit themes.json") edit_themes ;;
+    "Apply theme")     apply_theme ;;
+    *) exit 0 ;;
 esac
 
-# Run theme update scripts
-bash update-ohmyposh.sh
-bash update-rofi-theme.sh
-bash update_dmenu_theme.sh
-bash update-alacritty-theme.sh
-bash update-dunst-theme.sh
-bash update-gtk2-theme.sh
-bash update-gtk3-theme.sh
-bash update-gtk4-theme.sh
-bash update_picom_theme.sh
-
-SOCKET="$HOME/.cache/qtile/qtilesocket.:0"
-
-echo "Restarting Qtile..."
-qtile cmd-obj -o cmd -f restart || true
-
-# Wait until the IPC socket is back and responding
-for i in {1..50}; do   # 50 * 0.2s = 10s timeout
-    if qtile cmd-obj -s "$SOCKET" -o cmd -f info >/dev/null 2>&1; then
-        echo "Qtile restarted successfully."
-        exit 0
-    fi
-    sleep 0.2
-done
-
-echo "⚠️  Qtile restart timed out or IPC not ready."
-exit 1
