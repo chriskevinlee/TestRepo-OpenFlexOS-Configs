@@ -1,6 +1,62 @@
 #!/usr/bin/env bash
 set -e
 
+# Default theme selection method
+theme_selector="none"
+
+# Parse command-line options
+while getopts "dr" opt; do
+    case $opt in
+        d)
+            theme_selector="dmenu"
+            ;;
+        r)
+            theme_selector="rofi"
+            ;;
+        *)
+            echo "Usage: $0 [-d] [-r]"
+            exit 1
+            ;;
+    esac
+done
+
+# Define theme options (keys)
+themes=("gruvbox" "MyTestTheme" "nord" "dracula" "solarized_dark" "catppuccin_mocha")
+
+# Function to select theme using dmenu
+select_theme_dmenu() {
+    selected_theme=$(echo "${themes[@]}" | tr ' ' '\n' | dmenu -p "Select Theme:" -l 10)
+    if [[ -n "$selected_theme" ]]; then
+        echo "Selected theme: $selected_theme"
+        # Update the current theme in the themes.json file
+        jq --arg theme "$selected_theme" '.current = $theme' ~/.config/themes.json > ~/.config/themes.json.tmp && mv ~/.config/themes.json.tmp ~/.config/themes.json
+    fi
+}
+
+# Function to select theme using rofi
+select_theme_rofi() {
+    selected_theme=$(echo "${themes[@]}" | tr ' ' '\n' | rofi -dmenu -p "Select Theme:" -i -theme-str 'listview { lines: 10; }')
+    if [[ -n "$selected_theme" ]]; then
+        echo "Selected theme: $selected_theme"
+        # Update the current theme in the themes.json file
+        jq --arg theme "$selected_theme" '.current = $theme' ~/.config/themes.json > ~/.config/themes.json.tmp && mv ~/.config/themes.json.tmp ~/.config/themes.json
+    fi
+}
+
+# Select theme based on the chosen method
+case "$theme_selector" in
+    "dmenu")
+        select_theme_dmenu
+        ;;
+    "rofi")
+        select_theme_rofi
+        ;;
+    "none")
+        echo "No theme selection method chosen. Continuing with theme update."
+        ;;
+esac
+
+# Run theme update scripts
 bash update-ohmyposh.sh
 bash update-rofi-theme.sh
 bash update_dmenu_theme.sh
@@ -27,4 +83,3 @@ done
 
 echo "⚠️  Qtile restart timed out or IPC not ready."
 exit 1
-
