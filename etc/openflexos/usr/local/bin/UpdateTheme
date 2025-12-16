@@ -21,7 +21,7 @@ while getopts "dr" opt; do
 done
 
 # Define theme options (keys)
-themes=("gruvbox" "MyTestTheme" "nord" "dracula" "solarized_dark" "catppuccin_mocha")
+themes=($(jq -r '.themes | keys[]' ~/.config/themes.json))
 
 # Function to select theme using dmenu
 select_theme_dmenu() {
